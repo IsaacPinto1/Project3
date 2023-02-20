@@ -101,6 +101,13 @@ void Player::doSomething(){
     }
 }
 
+void Player::changeCoins(int amount){
+    m_coins += amount;
+    if(m_coins < 0){
+        m_coins = 0;
+    }
+}
+
 
 // Player End
 
@@ -112,6 +119,19 @@ Square::Square(int imageID, int x, int y, StudentWorld* world)
 {
 }
 
+void Square::trackPlayer(Actor *p){
+    players.insert(p);
+}
+
+
+void Square::removePlayer(Actor *p){
+    players.erase(p);
+}
+
+
+bool Square::containsPlayer(Actor *p){
+    return players.count(p) == 1;
+}
 
 // Square End
 
@@ -119,15 +139,32 @@ Square::Square(int imageID, int x, int y, StudentWorld* world)
 
 // Coin Square Begin
 
-CoinSquare::CoinSquare(int imageID, int x, int y, StudentWorld* world)
+CoinSquare::CoinSquare(int imageID, int x, int y, StudentWorld* world, int coin)
 :Square(imageID, x, y, world)
 {
+    coinAmount = coin;
 }
 
 
 void CoinSquare::doSomething(){
     if(!isAlive()){
         return;
+    }
+    if(getWorld()->doesItersect(this, getWorld()->getPeach()) && !containsPlayer(getWorld()->getPeach()) && !(getWorld()->getPeach()->isMoving())){
+        getWorld()->getPeach()->changeCoins(coinAmount);
+        trackPlayer(getWorld()->getPeach());
+        getWorld()->playSound(SOUND_GIVE_COIN);
+    }
+    if(getWorld()->doesItersect(this, getWorld()->getYoshi()) && !containsPlayer(getWorld()->getYoshi()) && !(getWorld()->getYoshi()->isMoving())){
+        getWorld()->getYoshi()->changeCoins(coinAmount);
+        trackPlayer(getWorld()->getYoshi());
+        getWorld()->playSound(SOUND_GIVE_COIN);
+    }
+    if(!(getWorld()->doesItersect(this, getWorld()->getPeach())) && containsPlayer(getWorld()->getPeach())){
+        removePlayer(getWorld()->getPeach());
+    }
+    if(!(getWorld()->doesItersect(this, getWorld()->getYoshi())) && containsPlayer(getWorld()->getYoshi())){
+        removePlayer(getWorld()->getYoshi());
     }
 }
 // Coin Square End

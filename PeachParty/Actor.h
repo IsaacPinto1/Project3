@@ -3,6 +3,7 @@
 
 #include "StudentWorld.h"
 #include "GraphObject.h"
+#include <set>
 
 class Actor: public GraphObject{
 public:
@@ -18,6 +19,8 @@ public:
     virtual int getRoll() {return 0;}
     virtual int getCoins() {return 0;}
     virtual int getStars() {return 0;}
+    virtual bool isMoving(){return false;}
+    virtual void changeCoins(int amount){}
 private:
     int walkingDir;
     StudentWorld* m_world;
@@ -35,6 +38,8 @@ public:
     virtual int getRoll(){return ceil(1.0*ticks_to_move/8);}
     virtual int getCoins(){return m_coins;}
     virtual int getStars(){return m_stars;}
+    virtual bool isMoving(){return waitingToRoll == false;}
+    virtual void changeCoins(int amount);
 private:
     int playerNumb;
     int ticks_to_move;
@@ -51,12 +56,19 @@ class Enemy: public Actor{
 class Square: public Actor{
 public:
     Square(int imageID, int x, int y, StudentWorld* world);
+    void trackPlayer(Actor* p);
+    void removePlayer(Actor* p);
+    bool containsPlayer(Actor* p);
+private:
+    std::set<Actor*> players;
 };
 
 class CoinSquare:public Square{
 public:
-    CoinSquare(int imageID, int x, int y, StudentWorld* world);
+    CoinSquare(int imageID, int x, int y, StudentWorld* world, int coin);
     void virtual doSomething();
+private:
+    int coinAmount;
 };
 
 #endif // ACTOR_H_

@@ -20,6 +20,10 @@ public:
     virtual void cleanUp();
     bool validSquare(int x, int y);
     int getBank(){return bank;}
+    bool doesItersect(Actor* a1, Actor* a2);
+    bool doesOverlap(Actor* a1, Actor* a2); // Vortex graphical overlap
+    Actor* getYoshi(){return yoshi;}
+    Actor* getPeach(){return peach;}
     
 private:
     std::set<std::string> validCoords;

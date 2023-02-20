@@ -20,6 +20,12 @@ StudentWorld::StudentWorld(string assetPath)
     bank = 0;
 }
 
+StudentWorld::~StudentWorld(){
+    delete yoshi;
+    delete peach;
+    cleanUp();
+}
+
 int StudentWorld::init()
 {
     Board bd;
@@ -39,7 +45,7 @@ int StudentWorld::init()
                 string key = to_string(i) + "," + to_string(j);
                 validCoords.insert(key);
                 if(ge == Board::blue_coin_square){
-                    actors.push_back(new CoinSquare(2, i, j, this));
+                    actors.push_back(new CoinSquare(2, i, j, this, 3));
                     cout << "Blue coin square" << endl;
                 } else if (ge == Board::red_coin_square){
                     cout << "Red coin square" << endl;
@@ -52,7 +58,7 @@ int StudentWorld::init()
                 } else if (ge == Board::player){
                     peach = new Player(0, i, j, this);
                     yoshi = new Player(1, i, j, this);
-                    actors.push_back(new CoinSquare(2, i, j, this));
+                    actors.push_back(new CoinSquare(2, i, j, this, 3));
                 } else if (ge == Board::bowser){
                     cout << "Bowser/blue coin" << endl;
                 } else if (ge == Board::boo){
@@ -179,8 +185,10 @@ bool StudentWorld::validSquare(int x, int y){
 }
 
 
-StudentWorld::~StudentWorld(){
-    delete yoshi;
-    delete peach;
-    cleanUp();
+bool StudentWorld::doesItersect(Actor *a1, Actor *a2){
+    if(a1->getX()==a2->getX() && a1->getY() == a2->getY()){
+        return true;
+    }
+    return false;
 }
+
