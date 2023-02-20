@@ -1,8 +1,47 @@
 #ifndef ACTOR_H_
 #define ACTOR_H_
 
+#include "StudentWorld.h"
 #include "GraphObject.h"
 
-// Students:  Add code to this file, Actor.cpp, StudentWorld.h, and StudentWorld.cpp
+class Actor: public GraphObject{
+public:
+    Actor(int imageID, int startX, int startY, int dir, int depth, StudentWorld* world);
+    virtual void doSomething() = 0;
+    StudentWorld* getWorld(){return m_world;}
+    int getWalkingDirection(){return walkingDir;}
+    void setWalkingDirection(int dir){walkingDir = dir;}
+    bool isAlive(){return m_isAlive;}
+private:
+    int walkingDir;
+    StudentWorld* m_world;
+    bool m_isAlive;
+};
+
+
+class Player: public Actor{
+public:
+    Player(int playerNumb, int x, int y, StudentWorld* world);
+    virtual void doSomething();
+private:
+    int playerNumb;
+    int ticks_to_move;
+    bool waitingToRoll;
+};
+
+class Enemy: public Actor{
+    
+};
+
+class Square: public Actor{
+public:
+    Square(int imageID, int x, int y, StudentWorld* world);
+};
+
+class CoinSquare:public Square{
+public:
+    CoinSquare(int imageID, int x, int y, StudentWorld* world);
+    void virtual doSomething();
+};
 
 #endif // ACTOR_H_
