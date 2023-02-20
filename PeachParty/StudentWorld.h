@@ -19,12 +19,14 @@ public:
     virtual int move();
     virtual void cleanUp();
     bool validSquare(int x, int y);
+    int getBank(){return bank;}
     
 private:
     std::set<std::string> validCoords;
     std::vector<Actor*> actors;
     Actor* peach;
     Actor* yoshi;
+    int bank;
 };
 
 #endif // STUDENTWORLD_H_

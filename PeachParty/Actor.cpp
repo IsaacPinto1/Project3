@@ -28,6 +28,9 @@ Player::Player(int player, int x, int y, StudentWorld* world)
     playerNumb = player+1;
     waitingToRoll = true;
     ticks_to_move = 0;
+    hasVortex = false;
+    m_stars = 0;
+    m_coins = 0;
 }
 
 Player::~Player(){}

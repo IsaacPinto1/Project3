@@ -13,6 +13,11 @@ public:
     void setWalkingDirection(int dir){walkingDir = dir;}
     bool isAlive(){return m_isAlive;}
     virtual ~Actor();
+    
+    virtual bool hasAVortex(){return false;}
+    virtual int getRoll() {return 0;}
+    virtual int getCoins() {return 0;}
+    virtual int getStars() {return 0;}
 private:
     int walkingDir;
     StudentWorld* m_world;
@@ -25,10 +30,18 @@ public:
     Player(int playerNumb, int x, int y, StudentWorld* world);
     ~Player();
     virtual void doSomething();
+    
+    virtual bool hasAVortex(){return hasVortex;}
+    virtual int getRoll(){return ceil(1.0*ticks_to_move/8);}
+    virtual int getCoins(){return m_coins;}
+    virtual int getStars(){return m_stars;}
 private:
     int playerNumb;
     int ticks_to_move;
     bool waitingToRoll;
+    bool hasVortex;
+    int m_stars;
+    int m_coins;
 };
 
 class Enemy: public Actor{

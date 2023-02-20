@@ -17,6 +17,7 @@ StudentWorld::StudentWorld(string assetPath)
 {
     peach = nullptr;
     yoshi = nullptr;
+    bank = 0;
 }
 
 int StudentWorld::init()
@@ -101,18 +102,58 @@ int StudentWorld::move()
         }
     }
     // Update the Game Status Line
-    setGameStatText("P1 Roll: 3 Stars: 2 $$: 15 | Time: 75 | Bank: 9"); // update the coins/stars stats text at screen top
+    string text = "P1 Roll: ";
+    text.append(to_string(peach->getRoll()));
+    text.append(" Stars: ");
+    text.append(to_string(peach->getStars()));
+    text.append(" $$: ");
+    text.append(to_string(peach->getCoins()));
+    if(peach->hasAVortex()){
+        text.append(" VOR");
+    }
+    text.append(" | Time: ");
+    text.append(to_string(timeRemaining()));
+    text.append(" | Bank: ");
+    text.append(to_string(getBank()));
+    text.append(" | P2 Roll: ");
+    text.append(to_string(yoshi->getRoll()));
+    text.append(" Stars: ");
+    text.append(to_string(yoshi->getStars()));
+    text.append(" $$: ");
+    text.append(to_string(yoshi->getCoins()));
+    if(yoshi->hasAVortex()){
+        text.append(" VOR ");
+    }
+    
+    setGameStatText(text); // update the coins/stars stats text at screen top
     if (timeRemaining() <= 0)
     {
         playSound(14);
-        //if(yoshi won)
-        if (true)
+        
+        if (yoshi->getStars() > peach->getStars())
         {
-            setFinalScore(1, 2); // (yoshiStars, yoshiCoins)
+            setFinalScore(yoshi->getStars(), yoshi->getCoins()); // (yoshiStars, yoshiCoins)
             return GWSTATUS_YOSHI_WON;
-        }else{ // if(peach won)
-            setFinalScore(3, 4); // (peachStars, peachCoins)
+        }else if(peach->getStars() > yoshi->getStars()){ // if(peach won)
+            setFinalScore(peach->getStars(), peach->getCoins()); // (peachStars, peachCoins)
             return GWSTATUS_PEACH_WON;
+        } else {
+            if(yoshi->getCoins() > peach->getCoins()){
+                setFinalScore(yoshi->getStars(), yoshi->getCoins()); // (yoshiStars, yoshiCoins)
+                return GWSTATUS_YOSHI_WON;
+            } else if(peach->getCoins() > yoshi -> getCoins()){
+                setFinalScore(peach->getStars(), peach->getCoins()); // (peachStars, peachCoins)
+                return GWSTATUS_PEACH_WON;
+            } else {
+                int winner = randInt(0,1);
+                if(winner == 0){
+                    setFinalScore(peach->getStars(), peach->getCoins()); // (peachStars, peachCoins)
+                    return GWSTATUS_PEACH_WON;
+                } else {
+                    setFinalScore(yoshi->getStars(), yoshi->getCoins()); // (yoshiStars, yoshiCoins)
+                    return GWSTATUS_YOSHI_WON;
+                }
+            }
         }
      }
     // the game isn't over yet so continue playing

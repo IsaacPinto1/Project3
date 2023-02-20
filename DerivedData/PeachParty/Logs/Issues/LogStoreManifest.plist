@@ -6,6 +6,34 @@
 	<integer>10</integer>
 	<key>logs</key>
 	<dict>
+		<key>41822AAC-8C87-48DA-86D5-FAC637FE7AA3</key>
+		<dict>
+			<key>className</key>
+			<string>IDEActivityLogMajorGroupSection</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.target.product-type.tool</string>
+			<key>fileName</key>
+			<string>41822AAC-8C87-48DA-86D5-FAC637FE7AA3.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+			</dict>
+			<key>signature</key>
+			<string>PeachParty-eykzcqtekowaxkfnmqnrvzlthbcn</string>
+			<key>timeStartedRecording</key>
+			<real>698627720.65099895</real>
+			<key>timeStoppedRecording</key>
+			<real>698627722.05657995</real>
+			<key>title</key>
+			<string>Build target PeachParty</string>
+			<key>uniqueIdentifier</key>
+			<string>41822AAC-8C87-48DA-86D5-FAC637FE7AA3</string>
+		</dict>
 		<key>506347E9-65CE-4452-91FF-B859A27201C1</key>
 		<dict>
 			<key>className</key>
@@ -33,34 +61,6 @@
 			<string>Build target PeachParty</string>
 			<key>uniqueIdentifier</key>
 			<string>506347E9-65CE-4452-91FF-B859A27201C1</string>
-		</dict>
-		<key>D6C5D977-2F78-4B3A-861F-F8646B565B08</key>
-		<dict>
-			<key>className</key>
-			<string>IDEActivityLogMajorGroupSection</string>
-			<key>documentTypeString</key>
-			<string>&lt;nil&gt;</string>
-			<key>domainType</key>
-			<string>Xcode.IDEActivityLogDomainType.target.product-type.tool</string>
-			<key>fileName</key>
-			<string>D6C5D977-2F78-4B3A-861F-F8646B565B08.xcactivitylog</string>
-			<key>hasPrimaryLog</key>
-			<true/>
-			<key>primaryObservable</key>
-			<dict>
-				<key>highLevelStatus</key>
-				<string>W</string>
-			</dict>
-			<key>signature</key>
-			<string>PeachParty-eykzcqtekowaxkfnmqnrvzlthbcn</string>
-			<key>timeStartedRecording</key>
-			<real>698624513.37865102</real>
-			<key>timeStoppedRecording</key>
-			<real>698624514.11607397</real>
-			<key>title</key>
-			<string>Build target PeachParty</string>
-			<key>uniqueIdentifier</key>
-			<string>D6C5D977-2F78-4B3A-861F-F8646B565B08</string>
 		</dict>
 	</dict>
 	<key>preserveOldLogs</key>
