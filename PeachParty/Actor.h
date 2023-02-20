@@ -12,6 +12,7 @@ public:
     int getWalkingDirection(){return walkingDir;}
     void setWalkingDirection(int dir){walkingDir = dir;}
     bool isAlive(){return m_isAlive;}
+    virtual ~Actor();
 private:
     int walkingDir;
     StudentWorld* m_world;
@@ -22,6 +23,7 @@ private:
 class Player: public Actor{
 public:
     Player(int playerNumb, int x, int y, StudentWorld* world);
+    ~Player();
     virtual void doSomething();
 private:
     int playerNumb;

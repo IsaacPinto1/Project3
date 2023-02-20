@@ -119,8 +119,6 @@ int StudentWorld::move()
 
 void StudentWorld::cleanUp()
 {
-    delete yoshi;
-    delete peach;
     while(actors.size() > 0){
         delete actors[0];
         actors.erase(actors.begin());
@@ -139,5 +137,7 @@ bool StudentWorld::validSquare(int x, int y){
 
 
 StudentWorld::~StudentWorld(){
+    delete yoshi;
+    delete peach;
     cleanUp();
 }

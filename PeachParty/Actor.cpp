@@ -16,6 +16,8 @@ Actor::Actor(int imageID, int startX, int startY, int dir, int depth, StudentWor
     m_isAlive = true;
 }
 
+Actor::~Actor(){}
+
 // Actor End
 
 
@@ -27,6 +29,8 @@ Player::Player(int player, int x, int y, StudentWorld* world)
     waitingToRoll = true;
     ticks_to_move = 0;
 }
+
+Player::~Player(){}
 
 void Player::doSomething(){
     if(waitingToRoll){
