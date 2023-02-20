@@ -15,6 +15,8 @@ GameWorld* createStudentWorld(string assetPath)
 StudentWorld::StudentWorld(string assetPath)
 : GameWorld(assetPath)
 {
+    peach = nullptr;
+    yoshi = nullptr;
 }
 
 int StudentWorld::init()

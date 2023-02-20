@@ -61,19 +61,19 @@ void Player::doSomething(){
         xpos = getX()/16;
         ypos = getY()/16;
         if(direction == 0 || direction == 180){
-            if(getWorld()->validSquare(xpos, ypos+1)){
+            if(getWorld()->validSquare(xpos, ypos+1)){ // Move up
                 setWalkingDirection(90);
-                setDirection(90);
-            } else{
+                setDirection(0);
+            } else{ // Move down
                 setWalkingDirection(270);
-                setDirection(270);
+                setDirection(0);
             }
         } else{
-            if(getWorld()->validSquare(xpos+1, ypos)){
+            if(getWorld()->validSquare(xpos+1, ypos)){ // Move right
                 setWalkingDirection(0);
                 setDirection(0);
             } else{
-                setWalkingDirection(180);
+                setWalkingDirection(180); // Move left
                 setDirection(180);
             }
         }
