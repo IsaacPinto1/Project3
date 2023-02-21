@@ -21,6 +21,7 @@ public:
     virtual int getStars() {return 0;}
     virtual bool isMoving(){return false;}
     virtual int changeCoins(int amount){return 0;}
+    virtual int changeStars(int amount){return 0;}
     virtual bool changesDirection() {return false;}
     
 private:
@@ -42,6 +43,7 @@ public:
     virtual int getStars(){return m_stars;}
     virtual bool isMoving(){return waitingToRoll == false;}
     virtual int changeCoins(int amount);
+    virtual int changeStars(int amount);
 private:
     int ticks_to_move;
     bool waitingToRoll;
@@ -56,7 +58,7 @@ class Enemy: public Actor{
 
 class Square: public Actor{
 public:
-    Square(int imageID, int x, int y, StudentWorld* world);
+    Square(int imageID, int x, int y, StudentWorld* world, int dir);
     void trackPlayer(int player);
     void removePlayer(int player);
     bool containsPlayer(int player);
@@ -92,6 +94,13 @@ public:
 class BankSquare: public Square{
 public:
     BankSquare(int imageID, int x, int y, StudentWorld* world);
+    virtual void doSomething();
+};
+
+
+class StarSquare: public Square{
+public:
+    StarSquare(int imageID, int x, int y, StudentWorld* world);
     virtual void doSomething();
 };
 

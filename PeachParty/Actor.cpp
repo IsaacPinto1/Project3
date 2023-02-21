@@ -38,7 +38,7 @@ void Player::doSomething(){
     if(waitingToRoll){
         int action = getWorld()->playerAction(this);
         if(action == ACTION_ROLL){
-            ticks_to_move = randInt(1, 10)*8;
+            ticks_to_move = 24;//randInt(1, 10)*8;
             waitingToRoll = false;
         } else{
             return;
@@ -132,14 +132,23 @@ int Player::changeCoins(int amount){
     return amount;
 }
 
+int Player::changeStars(int amount){
+    if(m_stars + amount < 0){
+        m_stars = 0;
+        return -m_stars;
+    }
+    m_stars += amount;
+    return amount;
+}
+
 
 // Player End
 
 
 // Square Begin
 
-Square::Square(int imageID, int x, int y, StudentWorld* world)
-: Actor(imageID, x, y, 0, 1, world)
+Square::Square(int imageID, int x, int y, StudentWorld* world, int dir)
+: Actor(imageID, x, y, dir, 1, world) // ID, x ,y, sprite direction, depth, worldpointer
 {
 }
 
@@ -164,7 +173,7 @@ bool Square::containsPlayer(int player){
 // Coin Square Begin
 
 CoinSquare::CoinSquare(int imageID, int x, int y, StudentWorld* world, int coin)
-:Square(imageID, x, y, world)
+:Square(imageID, x, y, world, 0)
 {
     coinAmount = coin;
 }
@@ -179,13 +188,14 @@ void CoinSquare::doSomething(){ // Peach== 1 Yoshi == 2
         trackPlayer(1);
         getWorld()->playSound(SOUND_GIVE_COIN);
     }
+    if(!(getWorld()->doesIntersect(this, 1)) && containsPlayer(1)){
+        removePlayer(1);
+    }
+    
     if(getWorld()->doesIntersect(this, 2) && !containsPlayer(2) && !(getWorld()->playerMoving(2))){
         getWorld()->changeCoins(coinAmount,2);
         trackPlayer(2);
         getWorld()->playSound(SOUND_GIVE_COIN);
-    }
-    if(!(getWorld()->doesIntersect(this, 1)) && containsPlayer(1)){
-        removePlayer(1);
     }
     if(!(getWorld()->doesIntersect(this, 2)) && containsPlayer(2)){
         removePlayer(2);
@@ -197,7 +207,7 @@ void CoinSquare::doSomething(){ // Peach== 1 Yoshi == 2
 // Directional Square Start
 
 DirectionalSquare::DirectionalSquare(int imageID, int x, int y, StudentWorld* world, int dir)
-:Square(imageID, x, y, world)
+:Square(imageID, x, y, world, dir)
 {
     direction = dir;
 }
@@ -217,7 +227,7 @@ void DirectionalSquare::doSomething(){
 
 // Event Square Begin
 EventSquare::EventSquare(int imageID, int x, int y, StudentWorld* world)
-: Square(imageID, x, y, world)
+: Square(imageID, x, y, world, 0)
 {
 }
 
@@ -234,7 +244,7 @@ void EventSquare::doSomething(){
 
 
 BankSquare::BankSquare(int imageID, int x, int y, StudentWorld* world)
-: Square(imageID, x, y, world)
+: Square(imageID, x, y, world, 0)
 {
 }
 
@@ -263,3 +273,32 @@ void BankSquare::doSomething(){
 }
 
 // Bank Square End
+
+
+
+// Star Square Start
+
+StarSquare::StarSquare(int imageID, int x, int y, StudentWorld* world)
+:Square(imageID, x, y, world, 0)
+{
+}
+
+
+void StarSquare::doSomething(){
+    if(getWorld()->doesIntersect(this, 1) && !containsPlayer(1) && !getWorld()->playerMoving(1)){
+        trackPlayer(1);
+        getWorld()->addStar(1);
+    }
+    if(!getWorld()->doesIntersect(this, 1) && containsPlayer(1)){
+        removePlayer(1);
+    }
+    
+    if(getWorld()->doesIntersect(this, 2) && !containsPlayer(2) && !getWorld()->playerMoving(2)){
+        trackPlayer(2);
+        getWorld()->addStar(2);
+    }
+    if(!getWorld()->doesIntersect(this, 2) && containsPlayer(2)){
+        removePlayer(2);
+    }
+}
+// Star Square End

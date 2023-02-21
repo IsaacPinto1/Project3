@@ -51,7 +51,7 @@ int StudentWorld::init()
                 } else if (ge == Board::red_coin_square){
                     cout << "Red coin square" << endl;
                 } else if (ge == Board::star_square){
-                    cout << "Star Square" << endl;
+                    actors.push_back(new StarSquare(IID_STAR_SQUARE, i, j, this));
                 } else if (ge == Board::event_square){
                     actors.push_back(new EventSquare(IID_EVENT_SQUARE, i, j, this));
                 } else if (ge == Board::bank_square){
@@ -305,5 +305,25 @@ void StudentWorld::withDrawFromBank(int player){
         yoshi->changeCoins(bank);
         bank = 0;
         playSound(SOUND_WITHDRAW_BANK);
+    }
+}
+
+void StudentWorld::addStar(int player){
+    if(player == 1){
+        if(peach->getCoins() < 20){
+            return;
+        }
+        peach->changeCoins(-20);
+        peach->changeStars(1);
+        playSound(SOUND_GIVE_STAR);
+    }
+    
+    if(player == 2){
+        if(yoshi->getCoins() < 20){
+            return;
+        }
+        yoshi->changeCoins(-20);
+        yoshi->changeStars(1);
+        playSound(SOUND_GIVE_STAR);
     }
 }
