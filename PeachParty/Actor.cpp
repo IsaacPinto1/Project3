@@ -38,7 +38,7 @@ void Player::doSomething(){
     if(waitingToRoll){
         int action = getWorld()->playerAction(this);
         if(action == ACTION_ROLL){
-            ticks_to_move = 24;//randInt(1, 10)*8;
+            ticks_to_move = randInt(1, 10)*8;
             waitingToRoll = false;
         } else{
             return;
