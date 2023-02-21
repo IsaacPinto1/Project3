@@ -28,6 +28,8 @@ public:
     void changePlayerDirection(int player, int direction);
     bool atFork(Actor* player);
     int countValidAdjacent(Actor* square);
+    void depositInBank(int player);
+    void withDrawFromBank(int player);
     
 private:
     std::set<std::string> validCoords; // 0-15 coords

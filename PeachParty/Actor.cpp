@@ -38,7 +38,7 @@ void Player::doSomething(){
     if(waitingToRoll){
         int action = getWorld()->playerAction(this);
         if(action == ACTION_ROLL){
-            ticks_to_move = randInt(1, 10)*8;
+            ticks_to_move = 24;//randInt(1, 10)*8;
             waitingToRoll = false;
         } else{
             return;
@@ -123,11 +123,13 @@ void Player::doSomething(){
     }
 }
 
-void Player::changeCoins(int amount){
-    m_coins += amount;
-    if(m_coins < 0){
+int Player::changeCoins(int amount){
+    if(m_coins + amount < 0){
         m_coins = 0;
+        return -m_coins;
     }
+    m_coins += amount;
+    return amount;
 }
 
 
@@ -225,3 +227,39 @@ void EventSquare::doSomething(){
     return;
 }
 // Event Square End
+
+
+
+// Bank Square Start
+
+
+BankSquare::BankSquare(int imageID, int x, int y, StudentWorld* world)
+: Square(imageID, x, y, world)
+{
+}
+
+void BankSquare::doSomething(){
+    if(getWorld()->doesIntersect(this, 1) && !containsPlayer(1)){ // Intersects with peach
+        if(getWorld()->playerMoving(1)){ // If moving, deduct 5 coins
+            getWorld()->depositInBank(1);
+        } else{
+            getWorld()->withDrawFromBank(1); // If not moving, empty bank, then track
+            trackPlayer(1);
+        }
+    } else if(!getWorld()->doesIntersect(this, 1) && containsPlayer(1)){
+        removePlayer(1); // If doesn't intersect and tracking, stop tracking
+    }
+    
+    if(getWorld()->doesIntersect(this, 2) && !containsPlayer(2)){ // Intersects with peach
+        if(getWorld()->playerMoving(2)){ // If moving, deduct 5 coins
+            getWorld()->depositInBank(2);
+        } else{
+            getWorld()->withDrawFromBank(2); // If not moving, empty bank, then track
+            trackPlayer(2);
+        }
+    } else if(!getWorld()->doesIntersect(this, 2) && containsPlayer(2)){
+        removePlayer(2); // If doesn't intersect and tracking, stop tracking
+    }
+}
+
+// Bank Square End

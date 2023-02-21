@@ -3,6 +3,7 @@
 #include "Board.h"
 #include "Actor.h"
 #include <string>
+#include <algorithm>
 using namespace std;
 
 GameWorld* createStudentWorld(string assetPath)
@@ -54,7 +55,7 @@ int StudentWorld::init()
                 } else if (ge == Board::event_square){
                     actors.push_back(new EventSquare(IID_EVENT_SQUARE, i, j, this));
                 } else if (ge == Board::bank_square){
-                    cout << "Bank Square" << endl;
+                    actors.push_back(new BankSquare(IID_BANK_SQUARE, i, j, this));
                 } else if (ge == Board::player){
                     peach = new Player(IID_PEACH, i, j, this); // Peach
                     yoshi = new Player(IID_YOSHI, i, j, this); // Yoshi
@@ -282,4 +283,27 @@ int StudentWorld::countValidAdjacent(Actor *square){
         count++;
     }
     return count;
+}
+
+
+void StudentWorld::depositInBank(int player){
+    if(player == 1){
+        bank += -peach->changeCoins(-5);
+        playSound(SOUND_DEPOSIT_BANK);
+    } else{
+        bank += -yoshi->changeCoins(-5);
+        playSound(SOUND_DEPOSIT_BANK);
+    }
+}
+
+void StudentWorld::withDrawFromBank(int player){
+    if(player == 1){
+        peach->changeCoins(bank);
+        bank = 0;
+        playSound(SOUND_WITHDRAW_BANK);
+    } else{
+        yoshi->changeCoins(bank);
+        bank = 0;
+        playSound(SOUND_WITHDRAW_BANK);
+    }
 }

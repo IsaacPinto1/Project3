@@ -20,7 +20,7 @@ public:
     virtual int getCoins() {return 0;}
     virtual int getStars() {return 0;}
     virtual bool isMoving(){return false;}
-    virtual void changeCoins(int amount){}
+    virtual int changeCoins(int amount){return 0;}
     virtual bool changesDirection() {return false;}
     
 private:
@@ -41,7 +41,7 @@ public:
     virtual int getCoins(){return m_coins;}
     virtual int getStars(){return m_stars;}
     virtual bool isMoving(){return waitingToRoll == false;}
-    virtual void changeCoins(int amount);
+    virtual int changeCoins(int amount);
 private:
     int ticks_to_move;
     bool waitingToRoll;
@@ -85,6 +85,13 @@ private:
 class EventSquare: public Square{
 public:
     EventSquare(int imageID, int x, int y, StudentWorld* world);
+    virtual void doSomething();
+};
+
+
+class BankSquare: public Square{
+public:
+    BankSquare(int imageID, int x, int y, StudentWorld* world);
     virtual void doSomething();
 };
 
