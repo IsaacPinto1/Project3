@@ -18,15 +18,19 @@ public:
     virtual int init();
     virtual int move();
     virtual void cleanUp();
+    int playerAction(Actor* player);
     bool validSquare(int x, int y);
     int getBank(){return bank;}
     bool doesIntersect(Actor* a1, int player);
     bool doesOverlap(Actor* a1, Actor* a2); // Vortex graphical overlap
     void changeCoins(int amount, int player);
     bool playerMoving(int player);
+    void changePlayerDirection(int player, int direction);
+    bool atFork(Actor* player);
+    int countValidAdjacent(Actor* square);
     
 private:
-    std::set<std::string> validCoords;
+    std::set<std::string> validCoords; // 0-15 coords
     std::vector<Actor*> actors;
     Actor* peach;
     Actor* yoshi;

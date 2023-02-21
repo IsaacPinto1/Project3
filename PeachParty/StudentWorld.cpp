@@ -41,36 +41,41 @@ int StudentWorld::init()
         cerr << "Successfully loaded board\n";
         for(int i = 0; i < 16; i++){
             for(int j = 0; j < 16; j++){
-                Board::GridEntry ge = bd.getContentsOf(i, j); // x=5, y=10
+                Board::GridEntry ge = bd.getContentsOf(i, j);
                 string key = to_string(i) + "," + to_string(j);
                 validCoords.insert(key);
                 if(ge == Board::blue_coin_square){
-                    actors.push_back(new CoinSquare(2, i, j, this, 3));
+                    actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i, j, this, 3));
                     cout << "Blue coin square" << endl;
                 } else if (ge == Board::red_coin_square){
                     cout << "Red coin square" << endl;
                 } else if (ge == Board::star_square){
                     cout << "Star Square" << endl;
                 } else if (ge == Board::event_square){
-                    cout << "Event Square" << endl;
+                    actors.push_back(new EventSquare(IID_EVENT_SQUARE, i, j, this));
                 } else if (ge == Board::bank_square){
                     cout << "Bank Square" << endl;
                 } else if (ge == Board::player){
-                    peach = new Player(0, i, j, this);
-                    yoshi = new Player(1, i, j, this);
-                    actors.push_back(new CoinSquare(2, i, j, this, 3));
+                    peach = new Player(IID_PEACH, i, j, this); // Peach
+                    yoshi = new Player(IID_YOSHI, i, j, this); // Yoshi
+                    actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i, j, this, 3));
                 } else if (ge == Board::bowser){
                     cout << "Bowser/blue coin" << endl;
                 } else if (ge == Board::boo){
-                    cout << "Boo/blue coin" << endl;
+                    cout << "Boo" << endl;
+                    actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i, j, this, 3));
                 } else if (ge == Board::right_dir_square){
-                    cout << "Directional right" << endl;
+                    actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i, j, this, 0));
+                    actors[actors.size()-1]->setDirection(0);
                 } else if (ge == Board::left_dir_square){
-                    cout << "Directional left" << endl;
+                    actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i, j, this, 180));
+                    actors[actors.size()-1]->setDirection(180);
                 } else if (ge == Board::up_dir_square){
-                    cout << "Directional up" << endl;
+                    actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i, j, this, 90));
+                    actors[actors.size()-1]->setDirection(90);
                 } else if (ge == Board::down_dir_square){
-                    cout << "Directional down" << endl;
+                    actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i, j, this, 270));
+                    actors[actors.size()-1]->setDirection(270);
                 } else{
                     validCoords.erase(key);
                 }
@@ -175,8 +180,17 @@ void StudentWorld::cleanUp()
 }
 
 
+int StudentWorld::playerAction(Actor *player){
+    if(player == peach){
+        return getAction(1);
+    } else{
+        return getAction(2);
+    }
+}
 
-bool StudentWorld::validSquare(int x, int y){
+
+
+bool StudentWorld::validSquare(int x, int y){ // Takes in 0-15 coords
     string key = to_string(x) + "," + to_string(y);
     if(validCoords.count(key) == 1){
         return true;
@@ -214,3 +228,58 @@ bool StudentWorld::playerMoving(int player){
     }
 }
 
+void StudentWorld::changePlayerDirection(int player, int direction){
+    if(player == 1){
+        if(direction == 180){
+            peach->setDirection(180);
+        } else{
+            peach->setDirection(0);
+        }
+        peach->setWalkingDirection(direction);
+    } else{
+        if(direction == 180){
+            yoshi->setDirection(180);
+        } else{
+            yoshi->setDirection(0);
+        }
+        yoshi->setWalkingDirection(direction);
+    }
+}
+
+bool StudentWorld::atFork(Actor* player){
+    if(player == peach){
+        for(int i = 0; i < actors.size(); i++){
+            if(doesIntersect(actors[i], 1) && !actors[i]->changesDirection() && countValidAdjacent(actors[i]) > 2){
+                return true;
+            }
+        }
+        return false;
+    } else { // Yoshi
+        for(int i = 0; i < actors.size(); i++){
+            if(doesIntersect(actors[i], 2) && !(actors[i]->changesDirection()) && countValidAdjacent(actors[i]) > 2){
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+
+int StudentWorld::countValidAdjacent(Actor *square){
+    int count = 0;
+    int x = square->getX()/16;
+    int y = square->getY()/16;
+    if(validSquare(x+1, y)){
+        count++;
+    }
+    if(validSquare(x-1, y)){
+        count++;
+    }
+    if(validSquare(x, y+1)){
+        count++;
+    }
+    if(validSquare(x, y-1)){
+        count++;
+    }
+    return count;
+}

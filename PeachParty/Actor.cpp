@@ -22,10 +22,9 @@ Actor::~Actor(){}
 
 
 // Player Begin
-Player::Player(int player, int x, int y, StudentWorld* world)
-:Actor(player, x, y, 0, 0, world)
+Player::Player(int playerID, int x, int y, StudentWorld* world)
+:Actor(playerID, x, y, 0, 0, world)
 {
-    playerNumb = player+1;
     waitingToRoll = true;
     ticks_to_move = 0;
     hasVortex = false;
@@ -37,13 +36,33 @@ Player::~Player(){}
 
 void Player::doSomething(){
     if(waitingToRoll){
-        int action = getWorld()->getAction(playerNumb);
+        int action = getWorld()->playerAction(this);
         if(action == ACTION_ROLL){
             ticks_to_move = randInt(1, 10)*8;
             waitingToRoll = false;
         } else{
             return;
         }
+    }
+    
+    if(getWorld()->atFork(this)){
+        int action = getWorld()->playerAction(this);
+        if(action == ACTION_LEFT && getWalkingDirection() != 0 && getWorld()->validSquare(getX()/16-1, getY()/16)){
+            setWalkingDirection(180);
+            setDirection(180);
+        } else if(action == ACTION_RIGHT && getWalkingDirection() != 180 && getWorld()->validSquare(getX()/16+1, getY()/16)){
+            setWalkingDirection(0);
+            setDirection(0);
+        } else if(action == ACTION_UP && getWalkingDirection() != 270 && getWorld()->validSquare(getX()/16, getY()/16+1)){
+            setWalkingDirection(90);
+            setDirection(0);
+        } else if(action == ACTION_DOWN && getWalkingDirection() != 90 && getWorld()->validSquare(getX()/16, getY()/16-1)){
+            setWalkingDirection(270);
+            setDirection(0);
+        } else{
+            return;
+        }
+        
     }
     
     int xpos = 0, ypos = 0, direction; // Get coords of square player is walking towards
@@ -171,3 +190,38 @@ void CoinSquare::doSomething(){ // Peach== 1 Yoshi == 2
     }
 }
 // Coin Square End
+
+
+// Directional Square Start
+
+DirectionalSquare::DirectionalSquare(int imageID, int x, int y, StudentWorld* world, int dir)
+:Square(imageID, x, y, world)
+{
+    direction = dir;
+}
+
+void DirectionalSquare::doSomething(){
+    if(getWorld()->doesIntersect(this, 1)){
+        getWorld()->changePlayerDirection(1, direction);
+    }
+    if(getWorld()->doesIntersect(this, 2)){
+        getWorld()->changePlayerDirection(2, direction);
+    }
+}
+
+// Directional Square End
+
+
+
+// Event Square Begin
+EventSquare::EventSquare(int imageID, int x, int y, StudentWorld* world)
+: Square(imageID, x, y, world)
+{
+}
+
+
+void EventSquare::doSomething(){
+    /* ############## IMPLEMENT ###############*/
+    return;
+}
+// Event Square End

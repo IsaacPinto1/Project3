@@ -21,6 +21,8 @@ public:
     virtual int getStars() {return 0;}
     virtual bool isMoving(){return false;}
     virtual void changeCoins(int amount){}
+    virtual bool changesDirection() {return false;}
+    
 private:
     int walkingDir;
     StudentWorld* m_world;
@@ -30,7 +32,7 @@ private:
 
 class Player: public Actor{
 public:
-    Player(int playerNumb, int x, int y, StudentWorld* world);
+    Player(int playerID, int x, int y, StudentWorld* world);
     ~Player();
     virtual void doSomething();
     
@@ -41,7 +43,6 @@ public:
     virtual bool isMoving(){return waitingToRoll == false;}
     virtual void changeCoins(int amount);
 private:
-    int playerNumb;
     int ticks_to_move;
     bool waitingToRoll;
     bool hasVortex;
@@ -66,9 +67,25 @@ private:
 class CoinSquare:public Square{
 public:
     CoinSquare(int imageID, int x, int y, StudentWorld* world, int coin);
-    void virtual doSomething();
+    virtual void doSomething();
 private:
     int coinAmount;
+};
+
+
+class DirectionalSquare: public Square{
+public:
+    DirectionalSquare(int imageID, int x, int y, StudentWorld* world, int dir);
+    virtual void doSomething();
+    virtual bool changesDirection() {return true;}
+private:
+    int direction;
+};
+
+class EventSquare: public Square{
+public:
+    EventSquare(int imageID, int x, int y, StudentWorld* world);
+    virtual void doSomething();
 };
 
 #endif // ACTOR_H_
