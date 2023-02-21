@@ -9,7 +9,7 @@ using namespace std;
 
 // Actor Begin
 Actor::Actor(int imageID, int startX, int startY, int dir, int depth, StudentWorld* world)
-: GraphObject(imageID, startX*16, startY*16, 0, depth, 1.0)
+: GraphObject(imageID, startX*16, startY*16, dir, depth, 1.0)
 {
     walkingDir = 0;
     m_world = world;
@@ -30,6 +30,16 @@ Player::Player(int playerID, int x, int y, StudentWorld* world)
     hasVortex = false;
     m_stars = 0;
     m_coins = 0;
+}
+
+Player::Player(const Player& position, const Player& stats, int player)
+:Actor(player-1, position.getX(), position.getY(), position.getDirection(), 0, position.getWorld())
+{
+    waitingToRoll = stats.waitingToRoll;
+    ticks_to_move = stats.ticks_to_move;
+    hasVortex = stats.hasVortex;
+    m_stars = stats.m_stars;
+    m_coins = stats.m_coins;
 }
 
 Player::~Player(){}
@@ -233,8 +243,20 @@ EventSquare::EventSquare(int imageID, int x, int y, StudentWorld* world)
 
 
 void EventSquare::doSomething(){
-    /* ############## IMPLEMENT ###############*/
-    return;
+    if(getWorld()->doesIntersect(this, 1) && !containsPlayer(1) && !getWorld()->playerMoving(1)){
+        int event = randInt(1, 3);
+        if(event == 1){
+            
+        } else if (event == 2){
+            getWorld()->swapPlayers();
+            trackPlayer(2);
+            getWorld()->playSound(SOUND_PLAYER_TELEPORT);
+        } else if (event == 3){
+            trackPlayer(1);
+            getWorld()->giveVortex(1);
+            getWorld()->playSound(SOUND_GIVE_VORTEX);
+        }
+    }
 }
 // Event Square End
 

@@ -67,16 +67,12 @@ int StudentWorld::init()
                     actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i, j, this, 3));
                 } else if (ge == Board::right_dir_square){
                     actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i, j, this, 0));
-                    actors[actors.size()-1]->setDirection(0);
                 } else if (ge == Board::left_dir_square){
                     actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i, j, this, 180));
-                    actors[actors.size()-1]->setDirection(180);
                 } else if (ge == Board::up_dir_square){
                     actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i, j, this, 90));
-                    actors[actors.size()-1]->setDirection(90);
                 } else if (ge == Board::down_dir_square){
                     actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i, j, this, 270));
-                    actors[actors.size()-1]->setDirection(270);
                 } else{
                     validCoords.erase(key);
                 }
@@ -326,4 +322,17 @@ void StudentWorld::addStar(int player){
         yoshi->changeStars(1);
         playSound(SOUND_GIVE_STAR);
     }
+}
+
+void StudentWorld::giveVortex(int player){
+    if(player == 1){
+        peach->giveVortex();
+    } else{
+        yoshi->giveVortex();
+    }
+}
+
+
+void StudentWorld::swapPlayers(){
+    
 }

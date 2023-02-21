@@ -8,14 +8,16 @@
 class Actor: public GraphObject{
 public:
     Actor(int imageID, int startX, int startY, int dir, int depth, StudentWorld* world);
+    
     virtual void doSomething() = 0;
-    StudentWorld* getWorld(){return m_world;}
+    StudentWorld* getWorld() const{return m_world;}
     int getWalkingDirection(){return walkingDir;}
     void setWalkingDirection(int dir){walkingDir = dir;}
     bool isAlive(){return m_isAlive;}
     virtual ~Actor();
     
     virtual bool hasAVortex(){return false;}
+    virtual void giveVortex(){return;}
     virtual int getRoll() {return 0;}
     virtual int getCoins() {return 0;}
     virtual int getStars() {return 0;}
@@ -34,10 +36,12 @@ private:
 class Player: public Actor{
 public:
     Player(int playerID, int x, int y, StudentWorld* world);
+    Player(const Player& position, const Player& stats, int player);
     ~Player();
     virtual void doSomething();
     
     virtual bool hasAVortex(){return hasVortex;}
+    virtual void giveVortex(){hasVortex = true;}
     virtual int getRoll(){return ceil(1.0*ticks_to_move/8);}
     virtual int getCoins(){return m_coins;}
     virtual int getStars(){return m_stars;}

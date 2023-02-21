@@ -31,6 +31,8 @@ public:
     void depositInBank(int player);
     void withDrawFromBank(int player);
     void addStar(int player);
+    void giveVortex(int player);
+    void swapPlayers();
     
 private:
     std::set<std::string> validCoords; // 0-15 coords
