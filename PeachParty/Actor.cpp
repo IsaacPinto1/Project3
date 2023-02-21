@@ -45,7 +45,8 @@ void Player::doSomething(){
             return;
         }
     }
-    int xpos = 0, ypos = 0, direction;
+    
+    int xpos = 0, ypos = 0, direction; // Get coords of square player is walking towards
     direction = getWalkingDirection();
     if(direction == 0){
         xpos = getX()/16+1;
@@ -60,7 +61,8 @@ void Player::doSomething(){
         xpos = ceil(1.0*getX()/16);
         ypos = ceil(1.0*getY()/16)-1;
     }
-    if(!(getWorld()->validSquare(xpos, ypos))){
+    
+    if(!(getWorld()->validSquare(xpos, ypos))){ // Change direction if square walking towards isn't valid
         xpos = getX()/16;
         ypos = getY()/16;
         if(direction == 0 || direction == 180){
@@ -81,7 +83,8 @@ void Player::doSomething(){
             }
         }
     }
-    direction = getWalkingDirection();
+    
+    direction = getWalkingDirection(); // Move in direction
     if(direction == 0){ // right
         //moveAtAngle(right, 2);
         moveTo(getX()+2, getY());
@@ -119,18 +122,18 @@ Square::Square(int imageID, int x, int y, StudentWorld* world)
 {
 }
 
-void Square::trackPlayer(Actor *p){
-    players.insert(p);
+void Square::trackPlayer(int player){
+    players.insert(player);
 }
 
 
-void Square::removePlayer(Actor *p){
-    players.erase(p);
+void Square::removePlayer(int player){
+    players.erase(player);
 }
 
 
-bool Square::containsPlayer(Actor *p){
-    return players.count(p) == 1;
+bool Square::containsPlayer(int player){
+    return players.count(player) == 1;
 }
 
 // Square End
@@ -146,25 +149,25 @@ CoinSquare::CoinSquare(int imageID, int x, int y, StudentWorld* world, int coin)
 }
 
 
-void CoinSquare::doSomething(){
+void CoinSquare::doSomething(){ // Peach== 1 Yoshi == 2
     if(!isAlive()){
         return;
     }
-    if(getWorld()->doesItersect(this, getWorld()->getPeach()) && !containsPlayer(getWorld()->getPeach()) && !(getWorld()->getPeach()->isMoving())){
-        getWorld()->getPeach()->changeCoins(coinAmount);
-        trackPlayer(getWorld()->getPeach());
+    if(getWorld()->doesIntersect(this, 1) && !containsPlayer(1) && !(getWorld()->playerMoving(1))){
+        getWorld()->changeCoins(coinAmount, 1);
+        trackPlayer(1);
         getWorld()->playSound(SOUND_GIVE_COIN);
     }
-    if(getWorld()->doesItersect(this, getWorld()->getYoshi()) && !containsPlayer(getWorld()->getYoshi()) && !(getWorld()->getYoshi()->isMoving())){
-        getWorld()->getYoshi()->changeCoins(coinAmount);
-        trackPlayer(getWorld()->getYoshi());
+    if(getWorld()->doesIntersect(this, 2) && !containsPlayer(2) && !(getWorld()->playerMoving(2))){
+        getWorld()->changeCoins(coinAmount,2);
+        trackPlayer(2);
         getWorld()->playSound(SOUND_GIVE_COIN);
     }
-    if(!(getWorld()->doesItersect(this, getWorld()->getPeach())) && containsPlayer(getWorld()->getPeach())){
-        removePlayer(getWorld()->getPeach());
+    if(!(getWorld()->doesIntersect(this, 1)) && containsPlayer(1)){
+        removePlayer(1);
     }
-    if(!(getWorld()->doesItersect(this, getWorld()->getYoshi())) && containsPlayer(getWorld()->getYoshi())){
-        removePlayer(getWorld()->getYoshi());
+    if(!(getWorld()->doesIntersect(this, 2)) && containsPlayer(2)){
+        removePlayer(2);
     }
 }
 // Coin Square End

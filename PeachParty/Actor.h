@@ -56,11 +56,11 @@ class Enemy: public Actor{
 class Square: public Actor{
 public:
     Square(int imageID, int x, int y, StudentWorld* world);
-    void trackPlayer(Actor* p);
-    void removePlayer(Actor* p);
-    bool containsPlayer(Actor* p);
+    void trackPlayer(int player);
+    void removePlayer(int player);
+    bool containsPlayer(int player);
 private:
-    std::set<Actor*> players;
+    std::set<int> players; // Peach==1 Yoshi == 2
 };
 
 class CoinSquare:public Square{

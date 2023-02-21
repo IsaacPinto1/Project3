@@ -185,10 +185,32 @@ bool StudentWorld::validSquare(int x, int y){
 }
 
 
-bool StudentWorld::doesItersect(Actor *a1, Actor *a2){
+bool StudentWorld::doesIntersect(Actor *a1, int player){
+    Actor* a2;
+    if(player == 1){
+        a2 = peach;
+    } else{
+        a2 = yoshi;
+    }
     if(a1->getX()==a2->getX() && a1->getY() == a2->getY()){
         return true;
     }
     return false;
+}
+
+void StudentWorld::changeCoins(int amount, int player){
+    if(player == 1){
+        peach->changeCoins(amount);
+    } else{
+        yoshi->changeCoins(amount);
+    }
+}
+
+bool StudentWorld::playerMoving(int player){
+    if(player == 1){
+        return peach->isMoving();
+    } else{
+        return yoshi->isMoving();
+    }
 }
 
