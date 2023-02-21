@@ -8,10 +8,10 @@ using namespace std;
 
 
 // Actor Begin
-Actor::Actor(int imageID, int startX, int startY, int dir, int depth, StudentWorld* world)
-: GraphObject(imageID, startX*16, startY*16, dir, depth, 1.0)
+Actor::Actor(int imageID, int startX, int startY, int dir, int depth, StudentWorld* world, int walkDir)
+: GraphObject(imageID, startX, startY, dir, depth, 1.0)
 {
-    walkingDir = 0;
+    walkingDir = walkDir;
     m_world = world;
     m_isAlive = true;
 }
@@ -23,7 +23,7 @@ Actor::~Actor(){}
 
 // Player Begin
 Player::Player(int playerID, int x, int y, StudentWorld* world)
-:Actor(playerID, x, y, 0, 0, world)
+:Actor(playerID, x, y, 0, 0, world, 0)
 {
     waitingToRoll = true;
     ticks_to_move = 0;
@@ -32,14 +32,14 @@ Player::Player(int playerID, int x, int y, StudentWorld* world)
     m_coins = 0;
 }
 
-Player::Player(const Player& position, const Player& stats, int player)
-:Actor(player-1, position.getX(), position.getY(), position.getDirection(), 0, position.getWorld())
+Player::Player(Actor& position, Actor& stats, int player)
+:Actor(player-1, position.getX(), position.getY(), position.getDirection(), 0, position.getWorld(), position.getWalkingDirection())
 {
-    waitingToRoll = stats.waitingToRoll;
-    ticks_to_move = stats.ticks_to_move;
-    hasVortex = stats.hasVortex;
-    m_stars = stats.m_stars;
-    m_coins = stats.m_coins;
+    waitingToRoll = !position.isMoving();
+    ticks_to_move = position.getTicksToMove();
+    hasVortex = stats.hasAVortex();
+    m_stars = stats.getStars();
+    m_coins = stats.getCoins();
 }
 
 Player::~Player(){}
@@ -48,7 +48,7 @@ void Player::doSomething(){
     if(waitingToRoll){
         int action = getWorld()->playerAction(this);
         if(action == ACTION_ROLL){
-            ticks_to_move = 24;//randInt(1, 10)*8;
+            ticks_to_move = randInt(1, 10)*8;
             waitingToRoll = false;
         } else{
             return;
@@ -158,7 +158,7 @@ int Player::changeStars(int amount){
 // Square Begin
 
 Square::Square(int imageID, int x, int y, StudentWorld* world, int dir)
-: Actor(imageID, x, y, dir, 1, world) // ID, x ,y, sprite direction, depth, worldpointer
+: Actor(imageID, x, y, dir, 1, world, 0) // ID, x ,y, sprite direction, depth, worldpointer
 {
 }
 
@@ -244,9 +244,9 @@ EventSquare::EventSquare(int imageID, int x, int y, StudentWorld* world)
 
 void EventSquare::doSomething(){
     if(getWorld()->doesIntersect(this, 1) && !containsPlayer(1) && !getWorld()->playerMoving(1)){
-        int event = randInt(1, 3);
+        int event = randInt(2, 3);
         if(event == 1){
-            
+            1+1;
         } else if (event == 2){
             getWorld()->swapPlayers();
             trackPlayer(2);

@@ -7,7 +7,7 @@
 
 class Actor: public GraphObject{
 public:
-    Actor(int imageID, int startX, int startY, int dir, int depth, StudentWorld* world);
+    Actor(int imageID, int startX, int startY, int dir, int depth, StudentWorld* world, int walkDir);
     
     virtual void doSomething() = 0;
     StudentWorld* getWorld() const{return m_world;}
@@ -25,6 +25,7 @@ public:
     virtual int changeCoins(int amount){return 0;}
     virtual int changeStars(int amount){return 0;}
     virtual bool changesDirection() {return false;}
+    virtual int getTicksToMove(){return 0;}
     
 private:
     int walkingDir;
@@ -36,7 +37,7 @@ private:
 class Player: public Actor{
 public:
     Player(int playerID, int x, int y, StudentWorld* world);
-    Player(const Player& position, const Player& stats, int player);
+    Player(Actor& position, Actor& stats, int player);
     ~Player();
     virtual void doSomething();
     
@@ -48,6 +49,8 @@ public:
     virtual bool isMoving(){return waitingToRoll == false;}
     virtual int changeCoins(int amount);
     virtual int changeStars(int amount);
+    virtual int getTicksToMove(){return ticks_to_move;}
+    
 private:
     int ticks_to_move;
     bool waitingToRoll;

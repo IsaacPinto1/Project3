@@ -46,33 +46,33 @@ int StudentWorld::init()
                 string key = to_string(i) + "," + to_string(j);
                 validCoords.insert(key);
                 if(ge == Board::blue_coin_square){
-                    actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i, j, this, 3));
+                    actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i*16, j*16, this, 3));
                     cout << "Blue coin square" << endl;
                 } else if (ge == Board::red_coin_square){
                     cout << "Red coin square" << endl;
                 } else if (ge == Board::star_square){
-                    actors.push_back(new StarSquare(IID_STAR_SQUARE, i, j, this));
+                    actors.push_back(new StarSquare(IID_STAR_SQUARE, i*16, j*16, this));
                 } else if (ge == Board::event_square){
-                    actors.push_back(new EventSquare(IID_EVENT_SQUARE, i, j, this));
+                    actors.push_back(new EventSquare(IID_EVENT_SQUARE, i*16, j*16, this));
                 } else if (ge == Board::bank_square){
-                    actors.push_back(new BankSquare(IID_BANK_SQUARE, i, j, this));
+                    actors.push_back(new BankSquare(IID_BANK_SQUARE, i*16, j*16, this));
                 } else if (ge == Board::player){
-                    peach = new Player(IID_PEACH, i, j, this); // Peach
-                    yoshi = new Player(IID_YOSHI, i, j, this); // Yoshi
-                    actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i, j, this, 3));
+                    peach = new Player(IID_PEACH, i*16, j*16, this); // Peach
+                    yoshi = new Player(IID_YOSHI, i*16, j*16, this); // Yoshi
+                    actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i*16, j*16, this, 3));
                 } else if (ge == Board::bowser){
                     cout << "Bowser/blue coin" << endl;
                 } else if (ge == Board::boo){
                     cout << "Boo" << endl;
-                    actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i, j, this, 3));
+                    actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i*16, j*16, this, 3));
                 } else if (ge == Board::right_dir_square){
-                    actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i, j, this, 0));
+                    actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i*16, j*16, this, 0));
                 } else if (ge == Board::left_dir_square){
-                    actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i, j, this, 180));
+                    actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i*16, j*16, this, 180));
                 } else if (ge == Board::up_dir_square){
-                    actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i, j, this, 90));
+                    actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i*16, j*16, this, 90));
                 } else if (ge == Board::down_dir_square){
-                    actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i, j, this, 270));
+                    actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i*16, j*16, this, 270));
                 } else{
                     validCoords.erase(key);
                 }
@@ -334,5 +334,10 @@ void StudentWorld::giveVortex(int player){
 
 
 void StudentWorld::swapPlayers(){
-    
+    Actor* newPeach = new Player(*yoshi, *peach, 1);
+    Actor* newYoshi = new Player(*peach, *yoshi, 2);
+    delete peach;
+    peach = newPeach;
+    delete yoshi;
+    yoshi = newYoshi;
 }
