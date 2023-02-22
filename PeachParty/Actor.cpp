@@ -384,7 +384,7 @@ StarSquare::StarSquare(int imageID, int x, int y, StudentWorld* world)
 
 
 void StarSquare::doSomething(){
-    if(getWorld()->doesIntersect(this, 1) && !containsPlayer(1) && !getWorld()->playerMoving(1)){
+    if(getWorld()->doesIntersect(this, 1) && !containsPlayer(1)){
         trackPlayer(1);
         getWorld()->addStar(1);
     }
@@ -392,7 +392,7 @@ void StarSquare::doSomething(){
         removePlayer(1);
     }
     
-    if(getWorld()->doesIntersect(this, 2) && !containsPlayer(2) && !getWorld()->playerMoving(2)){
+    if(getWorld()->doesIntersect(this, 2) && !containsPlayer(2)){
         trackPlayer(2);
         getWorld()->addStar(2);
     }
