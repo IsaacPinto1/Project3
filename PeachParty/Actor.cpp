@@ -92,7 +92,7 @@ void Player::doSomething(){
         justTeleported = false;
         int action = getWorld()->playerAction(this);
         if(action == ACTION_ROLL){
-            ticks_to_move = 8;//randInt(1, 10)*8;
+            ticks_to_move = randInt(1, 10)*8;
             waitingToRoll = false;
         } else{
             return;
@@ -240,7 +240,11 @@ void CoinSquare::doSomething(){ // Peach== 1 Yoshi == 2
     if(getWorld()->doesIntersect(this, 1) && !containsPlayer(1) && !(getWorld()->playerMoving(1))){
         getWorld()->changeCoins(coinAmount, 1);
         trackPlayer(1);
-        getWorld()->playSound(SOUND_GIVE_COIN);
+        if(coinAmount == 3){
+            getWorld()->playSound(SOUND_GIVE_COIN);
+        } else{
+            getWorld()->playSound(SOUND_TAKE_COIN);
+        }
     }
     if(!(getWorld()->doesIntersect(this, 1)) && containsPlayer(1)){
         removePlayer(1);
@@ -249,7 +253,11 @@ void CoinSquare::doSomething(){ // Peach== 1 Yoshi == 2
     if(getWorld()->doesIntersect(this, 2) && !containsPlayer(2) && !(getWorld()->playerMoving(2))){
         getWorld()->changeCoins(coinAmount,2);
         trackPlayer(2);
-        getWorld()->playSound(SOUND_GIVE_COIN);
+        if(coinAmount == 3){
+            getWorld()->playSound(SOUND_GIVE_COIN);
+        } else{
+            getWorld()->playSound(SOUND_TAKE_COIN);
+        }
     }
     if(!(getWorld()->doesIntersect(this, 2)) && containsPlayer(2)){
         removePlayer(2);
@@ -308,7 +316,7 @@ void EventSquare::doSomething(){
     }
     
     if(getWorld()->doesIntersect(this, 2) && !containsPlayer(2) && !getWorld()->playerMoving(2)){
-        int event = 1;//randInt(1, 3);
+        int event = randInt(1, 3);
         if(event == 1){
             getWorld()->teleportPlayer(2);
             trackPlayer(2);

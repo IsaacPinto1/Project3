@@ -53,7 +53,7 @@ int StudentWorld::init()
                     actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i*16, j*16, this, 3));
                     cout << "Blue coin square" << endl;
                 } else if (ge == Board::red_coin_square){
-                    cout << "Red coin square" << endl;
+                    actors.push_back(new CoinSquare(IID_RED_COIN_SQUARE, i*16, j*16, this, -3));
                 } else if (ge == Board::star_square){
                     actors.push_back(new StarSquare(IID_STAR_SQUARE, i*16, j*16, this));
                 } else if (ge == Board::event_square){
