@@ -394,6 +394,11 @@ Square::Square(int imageID, int x, int y, StudentWorld* world, int dir)
 {
 }
 
+
+bool Square::newPlayerLanded(int player){
+    return getWorld()->doesIntersect(this, player) && !containsPlayer(player) && !(getWorld()->playerMoving(player));
+}
+
 // Square End
 
 
@@ -415,7 +420,7 @@ void CoinSquare::doSomething(){ // Peach== 1 Yoshi == 2
     if(!isAlive()){
         return;
     }
-    if(getWorld()->doesIntersect(this, 1) && !containsPlayer(1) && !(getWorld()->playerMoving(1))){
+    if(newPlayerLanded(1)){
         getWorld()->changeCoins(coinAmount, 1);
         trackPlayer(1);
         if(coinAmount == 3){
@@ -428,7 +433,7 @@ void CoinSquare::doSomething(){ // Peach== 1 Yoshi == 2
         removePlayer(1);
     }
     
-    if(getWorld()->doesIntersect(this, 2) && !containsPlayer(2) && !(getWorld()->playerMoving(2))){
+    if(newPlayerLanded(2)){
         getWorld()->changeCoins(coinAmount,2);
         trackPlayer(2);
         if(coinAmount == 3){
@@ -473,7 +478,7 @@ EventSquare::EventSquare(int imageID, int x, int y, StudentWorld* world)
 
 
 void EventSquare::doSomething(){
-    if(getWorld()->doesIntersect(this, 1) && !containsPlayer(1) && !getWorld()->playerMoving(1)){
+    if(newPlayerLanded(1)){
         int event = 1;//randInt(1, 3);
         if(event == 1){
             getWorld()->teleportPlayer(1);
@@ -493,7 +498,7 @@ void EventSquare::doSomething(){
         removePlayer(1);
     }
     
-    if(getWorld()->doesIntersect(this, 2) && !containsPlayer(2) && !getWorld()->playerMoving(2)){
+    if(newPlayerLanded(2)){
         int event = randInt(1, 3);
         if(event == 1){
             getWorld()->teleportPlayer(2);
@@ -579,3 +584,47 @@ void StarSquare::doSomething(){
     }
 }
 // Star Square End
+
+
+
+// DroppingSquare Begin
+
+DroppingSquare::DroppingSquare(int imageID, int x, int y, StudentWorld* world)
+:Square(imageID, x, y, world, 0)
+{
+}
+
+void DroppingSquare::doSomething(){
+    if(newPlayerLanded(1)){
+        int action = randInt(1, 2); // 1: Take 10 coins, 2: Take 1 star
+        if(action == 1){
+            getWorld()->changeCoins(-10, 1);
+        }
+        if(action == 2){
+            getWorld()->changeStars(-1, 1);
+        }
+        trackPlayer(1);
+        getWorld()->playSound(SOUND_DROPPING_SQUARE_ACTIVATE);
+    }
+    if(!getWorld()->doesIntersect(this, 1) && containsPlayer(1)){
+        removePlayer(1);
+        
+        
+    }
+    if(newPlayerLanded(2)){
+        int action = randInt(1, 2); // 1: Take 10 coins, 2: Take 1 star
+        if(action == 1){
+            getWorld()->changeCoins(-10, 2);
+        }
+        if(action == 2){
+            getWorld()->changeStars(-1, 2);
+        }
+        trackPlayer(2);
+        getWorld()->playSound(SOUND_DROPPING_SQUARE_ACTIVATE);
+    }
+    if(!getWorld()->doesIntersect(this, 2) && containsPlayer(2)){
+        removePlayer(2);
+    }
+}
+
+// DroppingSquare End

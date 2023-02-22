@@ -133,6 +133,7 @@ public:
 class Square: public Actor{
 public:
     Square(int imageID, int x, int y, StudentWorld* world, int dir);
+    bool newPlayerLanded(int player);
 };
 
 class CoinSquare:public Square{
@@ -170,6 +171,12 @@ public:
 class StarSquare: public Square{
 public:
     StarSquare(int imageID, int x, int y, StudentWorld* world);
+    virtual void doSomething();
+};
+
+class DroppingSquare: public Square{
+public:
+    DroppingSquare(int imageID, int x, int y, StudentWorld* world);
     virtual void doSomething();
 };
 

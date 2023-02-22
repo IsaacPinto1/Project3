@@ -25,6 +25,7 @@ public:
     bool doesIntersect(Actor* a1, Actor* a2); // Checks intersection of two objects
     bool doesOverlap(Actor* a1, Actor* a2); // Vortex graphical overlap
     void changeCoins(int amount, int player);
+    void changeStars(int amount, int player);
     bool playerMoving(int player);
     void changePlayerDirection(int player, int direction);
     bool atFork(Actor* player);

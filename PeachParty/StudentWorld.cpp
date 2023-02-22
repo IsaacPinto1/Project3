@@ -220,6 +220,14 @@ void StudentWorld::changeCoins(int amount, int player){
     }
 }
 
+void StudentWorld::changeStars(int amount, int player){
+    if(player == 1){
+        peach->changeStars(amount);
+    } else{
+        yoshi->changeStars(amount);
+    }
+}
+
 bool StudentWorld::playerMoving(int player){
     if(player == 1){
         return peach->isMoving();
