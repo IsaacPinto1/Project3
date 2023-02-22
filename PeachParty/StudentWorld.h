@@ -21,7 +21,8 @@ public:
     int playerAction(Actor* player);
     bool validSquare(int x, int y);
     int getBank(){return bank;}
-    bool doesIntersect(Actor* a1, int player);
+    bool doesIntersect(Actor *a1, int player); // Checks intersection with player
+    bool doesIntersect(Actor* a1, Actor* a2); // Checks intersection of two objects
     bool doesOverlap(Actor* a1, Actor* a2); // Vortex graphical overlap
     void changeCoins(int amount, int player);
     bool playerMoving(int player);
@@ -35,6 +36,9 @@ public:
     void swapPlayers();
     void getIntsFromCoord(std::string str, int& x, int&y);
     void teleportPlayer(int player);
+    void swapCoins();
+    void swapStars();
+    void robPlayer(int player);
     
 private:
     std::set<std::string> validCoords; // 0-15 coords

@@ -233,6 +233,21 @@ bool Player::checkFork(){
 }
 
 
+void Player::setCoins(int amount){
+    if(amount < 0){
+        return;
+    }
+    m_coins = amount;
+}
+
+void Player::setStars(int amount){
+    if(amount < 0){
+        return;
+    }
+    m_stars = amount;
+}
+
+
 // Player End
 
 // Enemy Begin
@@ -242,6 +257,21 @@ Enemy::Enemy(int ImageID, int x, int y, StudentWorld* world)
 {
     pauseCounter = 180;
 }
+
+bool Enemy::shouldInteract(int player){
+    
+    if(getWorld()->doesIntersect(this, player) && !containsPlayer(player) && !getWorld()->playerMoving(player)){
+        trackPlayer(player);
+        return true;
+    }
+    if(!getWorld()->doesIntersect(this, player) && containsPlayer(player)){
+        removePlayer(player);
+    }
+    return false;
+}
+
+
+
 
 
 bool Enemy::checkFork(){
@@ -268,7 +298,9 @@ Boo::Boo(int ImageID, int x, int y, StudentWorld* world)
 
 void Boo::doSomething(){
     if(!isMoving()){
-        // Interact with player Code
+        if(shouldInteract(1) || shouldInteract(2)){
+            Interact();
+        }
         changePauseCounter(-1);
         if(getPauseCounter() == 0){
             startMoving();
@@ -276,6 +308,7 @@ void Boo::doSomething(){
             return;
         }
     }
+    clearPlayers();
     checkFork();
     
     if(!checkDirection()){
@@ -290,6 +323,16 @@ void Boo::startMoving(){
     setWaitingStatus(false);
 }
 
+void Boo::Interact(){
+    int action = randInt(1, 2); // 1: Swap coins, 2: Swap Stars
+    if(action == 1){
+        getWorld()->swapCoins();
+    } else{
+        getWorld()->swapStars();
+    }
+    getWorld()->playSound(SOUND_BOO_ACTIVATE);
+}
+
 // Boo end
 
 
@@ -302,7 +345,12 @@ Bowser::Bowser(int ImageID, int x, int y, StudentWorld* world)
 
 void Bowser::doSomething(){
     if(!isMoving()){
-        // Interact with player code
+        if(shouldInteract(1)){
+            Interact(1);
+        }
+        if(shouldInteract(2)){
+            Interact(2);
+        }
         changePauseCounter(-1);
         if(getPauseCounter() == 0){
             startMoving();
@@ -311,7 +359,7 @@ void Bowser::doSomething(){
             return;
         }
     }
-    
+    clearPlayers();
     checkFork();
     if(!checkDirection()){
         fixDirection();
@@ -323,6 +371,15 @@ void Bowser::stopWalking(){
     setWaitingStatus(true);
     setPauseCounter(180);
     /* Code to implement dropping square (25% chance) */
+}
+
+
+void Bowser::Interact(int player){
+    int action = randInt(1, 2); // 1: activate 2: do nothing
+    if(action == 1){
+        getWorld()->robPlayer(player);
+        getWorld()->playSound(SOUND_BOWSER_ACTIVATE);
+    }
 }
 
 // Bowser End

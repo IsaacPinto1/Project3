@@ -197,17 +197,19 @@ bool StudentWorld::validSquare(int x, int y){ // Takes in 0-15 coords
 }
 
 
-bool StudentWorld::doesIntersect(Actor *a1, int player){
-    Actor* a2;
-    if(player == 1){
-        a2 = peach;
-    } else{
-        a2 = yoshi;
-    }
+bool StudentWorld::doesIntersect(Actor *a1, Actor *a2){
     if(a1->getX()==a2->getX() && a1->getY() == a2->getY()){
         return true;
     }
     return false;
+}
+
+bool StudentWorld::doesIntersect(Actor *a1, int player){
+    if(player == 1){
+        return doesIntersect(a1, peach);
+    } else{
+        return doesIntersect(a1, yoshi);
+    }
 }
 
 void StudentWorld::changeCoins(int amount, int player){
@@ -245,21 +247,12 @@ void StudentWorld::changePlayerDirection(int player, int direction){
 }
 
 bool StudentWorld::atFork(Actor* player){
-    if(player == peach){
-        for(int i = 0; i < actors.size(); i++){
-            if(doesIntersect(actors[i], 1) && !actors[i]->changesDirection() && countValidAdjacent(actors[i]) > 2){
-                return true;
-            }
+    for(int i = 0; i < actors.size(); i++){
+        if(doesIntersect(actors[i], player) && !actors[i]->changesDirection() && !actors[i]->doesMove() && countValidAdjacent(actors[i]) > 2){
+            return true;
         }
-        return false;
-    } else { // Yoshi
-        for(int i = 0; i < actors.size(); i++){
-            if(doesIntersect(actors[i], 2) && !(actors[i]->changesDirection()) && countValidAdjacent(actors[i]) > 2){
-                return true;
-            }
-        }
-        return false;
     }
+    return false;
 }
 
 
@@ -375,5 +368,29 @@ void StudentWorld::teleportPlayer(int player){
         Actor* newPos = new Player(*yoshi, x*16, y*16, 2);
         delete yoshi;
         yoshi = newPos;
+    }
+}
+
+void StudentWorld::swapCoins(){
+    int peachCoins = peach->getCoins();
+    int yoshiCoins = yoshi->getCoins();
+    yoshi->setCoins(peachCoins);
+    peach->setCoins(yoshiCoins);
+}
+
+void StudentWorld::swapStars(){
+    int peachStars = peach->getStars();
+    int yoshiStars = yoshi->getStars();
+    yoshi->setStars(peachStars);
+    peach->setStars(yoshiStars);
+}
+
+void StudentWorld::robPlayer(int player){
+    if(player == 1){
+        peach->setCoins(0);
+        peach->setStars(0);
+    } else if (player == 2){
+        yoshi->setCoins(0);
+        yoshi->setStars(0);
     }
 }

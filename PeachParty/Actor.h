@@ -19,6 +19,7 @@ public:
     void trackPlayer(int player){players.insert(player);}
     void removePlayer(int player){players.erase(player);}
     bool containsPlayer(int player){return players.count(player)==1;}
+    void clearPlayers(){players.clear();}
     
     virtual bool hasAVortex(){return false;}
     virtual void giveVortex(){return;}
@@ -30,6 +31,9 @@ public:
     virtual int changeStars(int amount){return 0;}
     virtual bool changesDirection() {return false;}
     virtual int getTicksToMove(){return 0;}
+    virtual void setCoins(int amount){return;}
+    virtual void setStars(int amount){return;}
+    virtual bool doesMove(){return false;}
     
 private:
     StudentWorld* m_world;
@@ -56,6 +60,7 @@ public:
     void newRandomDirection();
     virtual void stopWalking() = 0; // Behavior when ticks run out
     virtual bool checkFork() = 0; // Returns true if not at fork or was at fork but moved, false if stuck at fork
+    virtual bool doesMove(){return true;}
     
 private:
     bool waitingToMove;
@@ -80,6 +85,8 @@ public:
     virtual int changeStars(int amount);
     virtual void stopWalking(){setWaitingStatus(true);}
     virtual bool checkFork();
+    virtual void setStars(int amount);
+    virtual void setCoins(int amount);
     
 private:
     bool hasVortex;
@@ -94,6 +101,7 @@ public:
     void setPauseCounter(int amount){pauseCounter = amount;}
     void changePauseCounter(int amount){pauseCounter += amount;}
     int getPauseCounter(){return pauseCounter;}
+    bool shouldInteract(int player);
     
     virtual bool checkFork();
     virtual void stopWalking();
@@ -109,6 +117,7 @@ public:
     Boo(int ImageID, int x, int y, StudentWorld* world);
     virtual void doSomething();
     virtual void startMoving();
+    void Interact();
 };
 
 class Bowser: public Enemy{
@@ -116,6 +125,7 @@ public:
     Bowser(int ImageID, int x, int y, StudentWorld* world);
     virtual void doSomething();
     virtual void stopWalking();
+    void Interact(int player);
 };
 
 
