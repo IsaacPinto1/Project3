@@ -16,6 +16,10 @@ public:
     bool isAlive(){return m_isAlive;}
     virtual ~Actor();
     
+    void trackPlayer(int player){players.insert(player);}
+    void removePlayer(int player){players.erase(player);}
+    bool containsPlayer(int player){return players.count(player)==1;}
+    
     virtual bool hasAVortex(){return false;}
     virtual void giveVortex(){return;}
     virtual int getRoll() {return 0;}
@@ -30,6 +34,7 @@ public:
 private:
     StudentWorld* m_world;
     bool m_isAlive;
+    std::set<int> players;
 };
 
 class Mover: public Actor{
@@ -95,7 +100,6 @@ public:
     // getHitByVortex();
 private:
     int pauseCounter;
-    std::set<int> players;
 };
 
 
@@ -119,11 +123,6 @@ public:
 class Square: public Actor{
 public:
     Square(int imageID, int x, int y, StudentWorld* world, int dir);
-    void trackPlayer(int player);
-    void removePlayer(int player);
-    bool containsPlayer(int player);
-private:
-    std::set<int> players; // Peach==1 Yoshi == 2
 };
 
 class CoinSquare:public Square{

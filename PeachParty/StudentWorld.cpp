@@ -83,9 +83,6 @@ int StudentWorld::init()
                 
             }
         }
-        for(set<string>::iterator p = validCoords.begin(); p != validCoords.end(); p++){
-            cout << *p << endl;
-        }
     }
 	startCountdownTimer(99);  // this placeholder causes timeout after 5 seconds
     return GWSTATUS_CONTINUE_GAME;

@@ -327,6 +327,9 @@ void Bowser::stopWalking(){
 
 // Bowser End
 
+
+
+
 // Square Begin
 
 Square::Square(int imageID, int x, int y, StudentWorld* world, int dir)
@@ -334,21 +337,11 @@ Square::Square(int imageID, int x, int y, StudentWorld* world, int dir)
 {
 }
 
-void Square::trackPlayer(int player){
-    players.insert(player);
-}
-
-
-void Square::removePlayer(int player){
-    players.erase(player);
-}
-
-
-bool Square::containsPlayer(int player){
-    return players.count(player) == 1;
-}
-
 // Square End
+
+
+
+
 
 
 
