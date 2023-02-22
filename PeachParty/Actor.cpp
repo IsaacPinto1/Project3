@@ -8,10 +8,9 @@ using namespace std;
 
 
 // Actor Begin
-Actor::Actor(int imageID, int startX, int startY, int dir, int depth, StudentWorld* world, int walkDir)
+Actor::Actor(int imageID, int startX, int startY, int dir, int depth, StudentWorld* world)
 : GraphObject(imageID, startX, startY, dir, depth, 1.0)
 {
-    walkingDir = walkDir;
     m_world = world;
     m_isAlive = true;
 }
@@ -21,104 +20,25 @@ Actor::~Actor(){}
 // Actor End
 
 
-// Player Begin
-Player::Player(int playerID, int x, int y, StudentWorld* world)
-:Actor(playerID, x, y, 0, 0, world, 0)
+// Mover Begin
+
+Mover::Mover(int imageID, int x, int y, int dir, int depth, StudentWorld* world, int walkDir, bool waiting, int ticks)
+:Actor(imageID, x, y, dir, depth, world)
 {
-    waitingToRoll = true;
-    ticks_to_move = 0;
-    hasVortex = false;
-    m_stars = 0;
-    m_coins = 0;
-    justTeleported = false;
+    waitingToMove = waiting;
+    ticks_to_move = ticks;
+    walkingDir = walkDir;
 }
 
-Player::Player(Actor& position, Actor& stats, int player)
-:Actor(player-1, position.getX(), position.getY(), position.getDirection(), 0, position.getWorld(), position.getWalkingDirection())
-{
-    waitingToRoll = !position.isMoving();
-    ticks_to_move = position.getTicksToMove();
-    hasVortex = stats.hasAVortex();
-    m_stars = stats.getStars();
-    m_coins = stats.getCoins();
-    justTeleported = false;
+Mover::~Mover(){}
+
+
+void Mover::startMoving(){
+    ticks_to_move = randInt(1, 10)*8;
+    waitingToMove = false;
 }
 
-Player::Player(Actor& old, int x, int y, int player)
-: Actor(player-1, x, y, old.getDirection(), 0, old.getWorld(), old.getWalkingDirection())
-{
-    m_stars = old.getStars();
-    m_coins = old.getCoins();
-    hasVortex = old.hasAVortex();
-    ticks_to_move = 0;
-    waitingToRoll = true;
-    justTeleported = true;
-}
-
-Player::~Player(){}
-
-void Player::doSomething(){
-    if(waitingToRoll){
-        if(justTeleported){
-            for(;;){
-                int direction = randInt(0, 3); // 0 right, 1 up, 2 left, 3 down
-                if(direction == 0){
-                    if(getWorld()->validSquare(getX()/16+1, getY()/16)){
-                        setDirection(0);
-                        setWalkingDirection(0);
-                        break;
-                    }
-                } else if(direction == 1){
-                    if(getWorld()->validSquare(getX()/16, getY()/16+1)){
-                        setDirection(0);
-                        setWalkingDirection(90);
-                        break;
-                    }
-                } else if(direction == 2){
-                    if(getWorld()->validSquare(getX()/16-1, getY()/16)){
-                        setDirection(180);
-                        setWalkingDirection(180);
-                        break;
-                    }
-                } else if(direction == 3){
-                    if(getWorld()->validSquare(getX()/16, getY()/16-1)){
-                        setDirection(0);
-                        setWalkingDirection(270);
-                        break;
-                    }
-                }
-            }
-        }
-        justTeleported = false;
-        int action = getWorld()->playerAction(this);
-        if(action == ACTION_ROLL){
-            ticks_to_move = randInt(1, 10)*8;
-            waitingToRoll = false;
-        } else{
-            return;
-        }
-    }
-    
-    if(getWorld()->atFork(this)){
-        int action = getWorld()->playerAction(this);
-        if(action == ACTION_LEFT && getWalkingDirection() != 0 && getWorld()->validSquare(getX()/16-1, getY()/16)){
-            setWalkingDirection(180);
-            setDirection(180);
-        } else if(action == ACTION_RIGHT && getWalkingDirection() != 180 && getWorld()->validSquare(getX()/16+1, getY()/16)){
-            setWalkingDirection(0);
-            setDirection(0);
-        } else if(action == ACTION_UP && getWalkingDirection() != 270 && getWorld()->validSquare(getX()/16, getY()/16+1)){
-            setWalkingDirection(90);
-            setDirection(0);
-        } else if(action == ACTION_DOWN && getWalkingDirection() != 90 && getWorld()->validSquare(getX()/16, getY()/16-1)){
-            setWalkingDirection(270);
-            setDirection(0);
-        } else{
-            return;
-        }
-        
-    }
-    
+bool Mover::checkDirection(){ // Makes sure there is valid square ahead of player
     int xpos = 0, ypos = 0, direction; // Get coords of square player is walking towards
     direction = getWalkingDirection();
     if(direction == 0){
@@ -134,30 +54,35 @@ void Player::doSomething(){
         xpos = ceil(1.0*getX()/16);
         ypos = ceil(1.0*getY()/16)-1;
     }
-    
-    if(!(getWorld()->validSquare(xpos, ypos))){ // Change direction if square walking towards isn't valid
-        xpos = getX()/16;
-        ypos = getY()/16;
-        if(direction == 0 || direction == 180){
-            if(getWorld()->validSquare(xpos, ypos+1)){ // Move up
-                setWalkingDirection(90);
-                setDirection(0);
-            } else{ // Move down
-                setWalkingDirection(270);
-                setDirection(0);
-            }
+    return getWorld()->validSquare(xpos, ypos);
+}
+
+void Mover::fixDirection(){ // Changes direction if at turning point (not a fork)
+    int xpos, ypos, direction;
+    direction = getWalkingDirection();
+    xpos = getX()/16;
+    ypos = getY()/16;
+    if(direction == 0 || direction == 180){
+        if(getWorld()->validSquare(xpos, ypos+1)){ // Move up
+            setWalkingDirection(90);
+            setDirection(0);
+        } else{ // Move down
+            setWalkingDirection(270);
+            setDirection(0);
+        }
+    } else{
+        if(getWorld()->validSquare(xpos+1, ypos)){ // Move right
+            setWalkingDirection(0);
+            setDirection(0);
         } else{
-            if(getWorld()->validSquare(xpos+1, ypos)){ // Move right
-                setWalkingDirection(0);
-                setDirection(0);
-            } else{
-                setWalkingDirection(180); // Move left
-                setDirection(180);
-            }
+            setWalkingDirection(180); // Move left
+            setDirection(180);
         }
     }
-    
-    direction = getWalkingDirection(); // Move in direction
+}
+
+void Mover::walk(){
+    int direction = getWalkingDirection(); // Move in direction
     if(direction == 0){ // right
         //moveAtAngle(right, 2);
         moveTo(getX()+2, getY());
@@ -171,10 +96,67 @@ void Player::doSomething(){
         //moveAtAngle(down, 2);
         moveTo(getX(), getY()-2);
     }
-    ticks_to_move--;
-    if(ticks_to_move == 0){
-        waitingToRoll = true;
+    changeTicks(-1);
+    if(getTicksToMove() == 0){
+        stopWalking();
     }
+}
+
+// Mover End
+
+
+// Player Begin
+Player::Player(int playerID, int x, int y, StudentWorld* world)
+:Mover(playerID, x, y, 0, 0, world, 0, true, 0)
+{
+    hasVortex = false;
+    m_stars = 0;
+    m_coins = 0;
+    justTeleported = false;
+}
+
+Player::Player(Actor& position, Actor& stats, int player)
+:Mover(player-1, position.getX(), position.getY(), position.getDirection(), 0, position.getWorld(), position.getWalkingDirection(), !position.isMoving(), position.getTicksToMove())
+{
+    hasVortex = stats.hasAVortex();
+    m_stars = stats.getStars();
+    m_coins = stats.getCoins();
+    justTeleported = false;
+}
+
+Player::Player(Actor& old, int x, int y, int player)
+: Mover(player-1, x, y, old.getDirection(), 0, old.getWorld(), old.getWalkingDirection(), true, 0)
+{
+    m_stars = old.getStars();
+    m_coins = old.getCoins();
+    hasVortex = old.hasAVortex();
+    justTeleported = true;
+}
+
+Player::~Player(){}
+
+void Player::doSomething(){
+    if(!isMoving()){
+        if(justTeleported){
+            newDirectionAfterTeleport();
+        }
+        justTeleported = false;
+        int action = getWorld()->playerAction(this);
+        if(action == ACTION_ROLL){
+            startMoving();
+        } else{
+            return;
+        }
+    }
+    
+    if(!checkFork()){
+        return;
+    }
+    
+    if(!checkDirection()){
+        fixDirection();
+    }
+    walk();
 }
 
 int Player::changeCoins(int amount){
@@ -195,6 +177,60 @@ int Player::changeStars(int amount){
     return amount;
 }
 
+void Player::newDirectionAfterTeleport(){
+    for(;;){
+        int direction = randInt(0, 3); // 0 right, 1 up, 2 left, 3 down
+        if(direction == 0){
+            if(getWorld()->validSquare(getX()/16+1, getY()/16)){
+                setDirection(0);
+                setWalkingDirection(0);
+                break;
+            }
+        } else if(direction == 1){
+            if(getWorld()->validSquare(getX()/16, getY()/16+1)){
+                setDirection(0);
+                setWalkingDirection(90);
+                break;
+            }
+        } else if(direction == 2){
+            if(getWorld()->validSquare(getX()/16-1, getY()/16)){
+                setDirection(180);
+                setWalkingDirection(180);
+                break;
+            }
+        } else if(direction == 3){
+            if(getWorld()->validSquare(getX()/16, getY()/16-1)){
+                setDirection(0);
+                setWalkingDirection(270);
+                break;
+            }
+        }
+    }
+}
+
+bool Player::checkFork(){
+    if(!getWorld()->atFork(this)){
+        return true;
+    }
+    int action = getWorld()->playerAction(this);
+    if(action == ACTION_LEFT && getWalkingDirection() != 0 && getWorld()->validSquare(getX()/16-1, getY()/16)){
+        setWalkingDirection(180);
+        setDirection(180);
+    } else if(action == ACTION_RIGHT && getWalkingDirection() != 180 && getWorld()->validSquare(getX()/16+1, getY()/16)){
+        setWalkingDirection(0);
+        setDirection(0);
+    } else if(action == ACTION_UP && getWalkingDirection() != 270 && getWorld()->validSquare(getX()/16, getY()/16+1)){
+        setWalkingDirection(90);
+        setDirection(0);
+    } else if(action == ACTION_DOWN && getWalkingDirection() != 90 && getWorld()->validSquare(getX()/16, getY()/16-1)){
+        setWalkingDirection(270);
+        setDirection(0);
+    } else{
+        return false;
+    }
+    return true;
+}
+
 
 // Player End
 
@@ -202,7 +238,7 @@ int Player::changeStars(int amount){
 // Square Begin
 
 Square::Square(int imageID, int x, int y, StudentWorld* world, int dir)
-: Actor(imageID, x, y, dir, 1, world, 0) // ID, x ,y, sprite direction, depth, worldpointer
+: Actor(imageID, x, y, dir, 1, world) // ID, x ,y, sprite direction, depth, worldpointer
 {
 }
 

@@ -7,12 +7,12 @@
 
 class Actor: public GraphObject{
 public:
-    Actor(int imageID, int startX, int startY, int dir, int depth, StudentWorld* world, int walkDir);
+    Actor(int imageID, int startX, int startY, int dir, int depth, StudentWorld* world);
     
     virtual void doSomething() = 0;
     StudentWorld* getWorld() const{return m_world;}
-    int getWalkingDirection(){return walkingDir;}
-    void setWalkingDirection(int dir){walkingDir = dir;}
+    virtual int getWalkingDirection(){return 0;}
+    virtual void setWalkingDirection(int dir){return;}
     bool isAlive(){return m_isAlive;}
     virtual ~Actor();
     
@@ -28,13 +28,37 @@ public:
     virtual int getTicksToMove(){return 0;}
     
 private:
-    int walkingDir;
     StudentWorld* m_world;
     bool m_isAlive;
 };
 
+class Mover: public Actor{
+public:
+    Mover(int imageID, int x, int y, int dir, int depth, StudentWorld* world, int walkDir, bool waiting, int ticks);
+    ~Mover();
+    virtual int getWalkingDirection(){return walkingDir;}
+    virtual void setWalkingDirection(int dir){walkingDir = dir;}
+    virtual int getTicksToMove(){return ticks_to_move;}
+    virtual bool isMoving(){return waitingToMove == false;}
+    virtual int getRoll(){return ceil(1.0*ticks_to_move/8);}
+    void setTicks(int amount){ticks_to_move = amount;}
+    void changeTicks(int amount){ticks_to_move += amount;}
+    void setWaitingStatus(bool status){waitingToMove = status;}
+    void startMoving(); // Set ticks to random roll and change waiting to move status
+    bool checkDirection(); // Check valid square in front
+    void fixDirection(); // Change direction if not valid
+    void walk(); // Move in direction of motion, then decrement ticks. Call stopWalking() if ticks run out
+    virtual void stopWalking() = 0; // Behavior when ticks run out
+    virtual bool checkFork() = 0; // Returns true if not at fork or was at fork but moved, false if stuck at fork
+    
+private:
+    bool waitingToMove;
+    int ticks_to_move;
+    int walkingDir;
+};
 
-class Player: public Actor{
+
+class Player: public Mover{
 public:
     Player(int playerID, int x, int y, StudentWorld* world);
     Player(Actor& position, Actor& stats, int player);
@@ -44,17 +68,15 @@ public:
     
     virtual bool hasAVortex(){return hasVortex;}
     virtual void giveVortex(){hasVortex = true;}
-    virtual int getRoll(){return ceil(1.0*ticks_to_move/8);}
     virtual int getCoins(){return m_coins;}
     virtual int getStars(){return m_stars;}
-    virtual bool isMoving(){return waitingToRoll == false;}
     virtual int changeCoins(int amount);
     virtual int changeStars(int amount);
-    virtual int getTicksToMove(){return ticks_to_move;}
+    virtual void stopWalking(){setWaitingStatus(true);}
+    void newDirectionAfterTeleport();
+    virtual bool checkFork();
     
 private:
-    int ticks_to_move;
-    bool waitingToRoll;
     bool hasVortex;
     int m_stars;
     int m_coins;
