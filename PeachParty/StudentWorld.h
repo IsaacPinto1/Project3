@@ -33,6 +33,8 @@ public:
     void addStar(int player);
     void giveVortex(int player);
     void swapPlayers();
+    void getIntsFromCoord(std::string str, int& x, int&y);
+    void teleportPlayer(int player);
     
 private:
     std::set<std::string> validCoords; // 0-15 coords

@@ -30,6 +30,7 @@ Player::Player(int playerID, int x, int y, StudentWorld* world)
     hasVortex = false;
     m_stars = 0;
     m_coins = 0;
+    justTeleported = false;
 }
 
 Player::Player(Actor& position, Actor& stats, int player)
@@ -40,15 +41,58 @@ Player::Player(Actor& position, Actor& stats, int player)
     hasVortex = stats.hasAVortex();
     m_stars = stats.getStars();
     m_coins = stats.getCoins();
+    justTeleported = false;
+}
+
+Player::Player(Actor& old, int x, int y, int player)
+: Actor(player-1, x, y, old.getDirection(), 0, old.getWorld(), old.getWalkingDirection())
+{
+    m_stars = old.getStars();
+    m_coins = old.getCoins();
+    hasVortex = old.hasAVortex();
+    ticks_to_move = 0;
+    waitingToRoll = true;
+    justTeleported = true;
 }
 
 Player::~Player(){}
 
 void Player::doSomething(){
     if(waitingToRoll){
+        if(justTeleported){
+            for(;;){
+                int direction = randInt(0, 3); // 0 right, 1 up, 2 left, 3 down
+                if(direction == 0){
+                    if(getWorld()->validSquare(getX()/16+1, getY()/16)){
+                        setDirection(0);
+                        setWalkingDirection(0);
+                        break;
+                    }
+                } else if(direction == 1){
+                    if(getWorld()->validSquare(getX()/16, getY()/16+1)){
+                        setDirection(0);
+                        setWalkingDirection(90);
+                        break;
+                    }
+                } else if(direction == 2){
+                    if(getWorld()->validSquare(getX()/16-1, getY()/16)){
+                        setDirection(180);
+                        setWalkingDirection(180);
+                        break;
+                    }
+                } else if(direction == 3){
+                    if(getWorld()->validSquare(getX()/16, getY()/16-1)){
+                        setDirection(0);
+                        setWalkingDirection(270);
+                        break;
+                    }
+                }
+            }
+        }
+        justTeleported = false;
         int action = getWorld()->playerAction(this);
         if(action == ACTION_ROLL){
-            ticks_to_move = randInt(1, 10)*8;
+            ticks_to_move = 8;//randInt(1, 10)*8;
             waitingToRoll = false;
         } else{
             return;
@@ -244,9 +288,11 @@ EventSquare::EventSquare(int imageID, int x, int y, StudentWorld* world)
 
 void EventSquare::doSomething(){
     if(getWorld()->doesIntersect(this, 1) && !containsPlayer(1) && !getWorld()->playerMoving(1)){
-        int event = randInt(2, 3);
+        int event = 1;//randInt(1, 3);
         if(event == 1){
-            1+1;
+            getWorld()->teleportPlayer(1);
+            trackPlayer(1);
+            getWorld()->playSound(SOUND_PLAYER_TELEPORT);
         } else if (event == 2){
             getWorld()->swapPlayers();
             trackPlayer(2);
@@ -256,6 +302,29 @@ void EventSquare::doSomething(){
             getWorld()->giveVortex(1);
             getWorld()->playSound(SOUND_GIVE_VORTEX);
         }
+    }
+    if(!getWorld()->doesIntersect(this, 1) && containsPlayer(1)){
+        removePlayer(1);
+    }
+    
+    if(getWorld()->doesIntersect(this, 2) && !containsPlayer(2) && !getWorld()->playerMoving(2)){
+        int event = 1;//randInt(1, 3);
+        if(event == 1){
+            getWorld()->teleportPlayer(2);
+            trackPlayer(2);
+            getWorld()->playSound(SOUND_PLAYER_TELEPORT);
+        } else if (event == 2){
+            getWorld()->swapPlayers();
+            trackPlayer(1);
+            getWorld()->playSound(SOUND_PLAYER_TELEPORT);
+        } else if (event == 3){
+            trackPlayer(2);
+            getWorld()->giveVortex(2);
+            getWorld()->playSound(SOUND_GIVE_VORTEX);
+        }
+    }
+    if(!getWorld()->doesIntersect(this, 2) && containsPlayer(2)){
+        removePlayer(2);
     }
 }
 // Event Square End

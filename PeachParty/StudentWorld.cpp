@@ -4,6 +4,8 @@
 #include "Actor.h"
 #include <string>
 #include <algorithm>
+#include <sstream>
+#include <iterator>
 using namespace std;
 
 GameWorld* createStudentWorld(string assetPath)
@@ -36,8 +38,10 @@ int StudentWorld::init()
     
     if (result == Board::load_fail_file_not_found){
         cerr << "Could not find board01.txt data file\n";
+        return GWSTATUS_BOARD_ERROR;
     } else if (result == Board::load_fail_bad_format){
         cerr << "Your board was improperly formatted\n";
+        return GWSTATUS_BOARD_ERROR;
     } else if (result == Board::load_success) {
         cerr << "Successfully loaded board\n";
         for(int i = 0; i < 16; i++){
@@ -340,4 +344,39 @@ void StudentWorld::swapPlayers(){
     peach = newPeach;
     delete yoshi;
     yoshi = newYoshi;
+}
+
+
+void StudentWorld::getIntsFromCoord(std::string str, int& x, int&y){
+    stringstream ss(str);
+    string token;
+
+    getline(ss, token, ',');
+    x = stoi(token);
+
+    getline(ss, token);
+    y = stoi(token);
+}
+
+
+void StudentWorld::teleportPlayer(int player){
+    if(player == 1){
+        int i = randInt(0, int(validCoords.size()-1));
+        int x; int y;
+        set<string>::iterator p = validCoords.begin();
+        advance(p, i);
+        getIntsFromCoord(*p, x, y);
+        Actor* newPos = new Player(*peach, x*16, y*16, 1);
+        delete peach;
+        peach = newPos;
+    } else{
+        int i = randInt(0, int(validCoords.size()-1));
+        int x; int y;
+        set<string>::iterator p = validCoords.begin();
+        advance(p, i);
+        getIntsFromCoord(*p, x, y);
+        Actor* newPos = new Player(*yoshi, x*16, y*16, 2);
+        delete yoshi;
+        yoshi = newPos;
+    }
 }

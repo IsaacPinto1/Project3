@@ -38,6 +38,7 @@ class Player: public Actor{
 public:
     Player(int playerID, int x, int y, StudentWorld* world);
     Player(Actor& position, Actor& stats, int player);
+    Player(Actor& old, int x, int y, int player);
     ~Player();
     virtual void doSomething();
     
@@ -57,6 +58,7 @@ private:
     bool hasVortex;
     int m_stars;
     int m_coins;
+    bool justTeleported;
 };
 
 class Enemy: public Actor{
