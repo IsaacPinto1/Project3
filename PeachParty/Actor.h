@@ -44,10 +44,11 @@ public:
     void setTicks(int amount){ticks_to_move = amount;}
     void changeTicks(int amount){ticks_to_move += amount;}
     void setWaitingStatus(bool status){waitingToMove = status;}
-    void startMoving(); // Set ticks to random roll and change waiting to move status
+    virtual void startMoving(); // Set ticks to random roll and change waiting to move status
     bool checkDirection(); // Check valid square in front
     void fixDirection(); // Change direction if not valid
     void walk(); // Move in direction of motion, then decrement ticks. Call stopWalking() if ticks run out
+    void newRandomDirection();
     virtual void stopWalking() = 0; // Behavior when ticks run out
     virtual bool checkFork() = 0; // Returns true if not at fork or was at fork but moved, false if stuck at fork
     
@@ -73,7 +74,6 @@ public:
     virtual int changeCoins(int amount);
     virtual int changeStars(int amount);
     virtual void stopWalking(){setWaitingStatus(true);}
-    void newDirectionAfterTeleport();
     virtual bool checkFork();
     
 private:
@@ -83,9 +83,38 @@ private:
     bool justTeleported;
 };
 
-class Enemy: public Actor{
+class Enemy: public Mover{
+public:
+    Enemy(int ImageID, int x, int y, StudentWorld* world);
+    void setPauseCounter(int amount){pauseCounter = amount;}
+    void changePauseCounter(int amount){pauseCounter += amount;}
+    int getPauseCounter(){return pauseCounter;}
     
+    virtual bool checkFork();
+    virtual void stopWalking();
+    // getHitByVortex();
+private:
+    int pauseCounter;
+    std::set<int> players;
 };
+
+
+
+class Boo: public Enemy{
+public:
+    Boo(int ImageID, int x, int y, StudentWorld* world);
+    virtual void doSomething();
+    virtual void startMoving();
+};
+
+class Bowser: public Enemy{
+public:
+    Bowser(int ImageID, int x, int y, StudentWorld* world);
+    virtual void doSomething();
+    virtual void stopWalking();
+};
+
+
 
 class Square: public Actor{
 public:

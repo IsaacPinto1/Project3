@@ -51,7 +51,6 @@ int StudentWorld::init()
                 validCoords.insert(key);
                 if(ge == Board::blue_coin_square){
                     actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i*16, j*16, this, 3));
-                    cout << "Blue coin square" << endl;
                 } else if (ge == Board::red_coin_square){
                     actors.push_back(new CoinSquare(IID_RED_COIN_SQUARE, i*16, j*16, this, -3));
                 } else if (ge == Board::star_square){
@@ -65,9 +64,10 @@ int StudentWorld::init()
                     yoshi = new Player(IID_YOSHI, i*16, j*16, this); // Yoshi
                     actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i*16, j*16, this, 3));
                 } else if (ge == Board::bowser){
-                    cout << "Bowser/blue coin" << endl;
+                    actors.push_back(new Bowser(IID_BOWSER, i*16, j*16, this));
+                    actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i*16, j*16, this, 3));
                 } else if (ge == Board::boo){
-                    cout << "Boo" << endl;
+                    actors.push_back(new Boo(IID_BOO, i*16, j*16, this));
                     actors.push_back(new CoinSquare(IID_BLUE_COIN_SQUARE, i*16, j*16, this, 3));
                 } else if (ge == Board::right_dir_square){
                     actors.push_back(new DirectionalSquare(IID_DIR_SQUARE, i*16, j*16, this, 0));

@@ -102,6 +102,37 @@ void Mover::walk(){
     }
 }
 
+void Mover::newRandomDirection(){
+    for(;;){
+        int direction = randInt(0, 3); // 0 right, 1 up, 2 left, 3 down
+        if(direction == 0){
+            if(getWorld()->validSquare(getX()/16+1, getY()/16)){
+                setDirection(0);
+                setWalkingDirection(0);
+                break;
+            }
+        } else if(direction == 1){
+            if(getWorld()->validSquare(getX()/16, getY()/16+1)){
+                setDirection(0);
+                setWalkingDirection(90);
+                break;
+            }
+        } else if(direction == 2){
+            if(getWorld()->validSquare(getX()/16-1, getY()/16)){
+                setDirection(180);
+                setWalkingDirection(180);
+                break;
+            }
+        } else if(direction == 3){
+            if(getWorld()->validSquare(getX()/16, getY()/16-1)){
+                setDirection(0);
+                setWalkingDirection(270);
+                break;
+            }
+        }
+    }
+}
+
 // Mover End
 
 
@@ -138,7 +169,7 @@ Player::~Player(){}
 void Player::doSomething(){
     if(!isMoving()){
         if(justTeleported){
-            newDirectionAfterTeleport();
+            newRandomDirection();
         }
         justTeleported = false;
         int action = getWorld()->playerAction(this);
@@ -177,36 +208,6 @@ int Player::changeStars(int amount){
     return amount;
 }
 
-void Player::newDirectionAfterTeleport(){
-    for(;;){
-        int direction = randInt(0, 3); // 0 right, 1 up, 2 left, 3 down
-        if(direction == 0){
-            if(getWorld()->validSquare(getX()/16+1, getY()/16)){
-                setDirection(0);
-                setWalkingDirection(0);
-                break;
-            }
-        } else if(direction == 1){
-            if(getWorld()->validSquare(getX()/16, getY()/16+1)){
-                setDirection(0);
-                setWalkingDirection(90);
-                break;
-            }
-        } else if(direction == 2){
-            if(getWorld()->validSquare(getX()/16-1, getY()/16)){
-                setDirection(180);
-                setWalkingDirection(180);
-                break;
-            }
-        } else if(direction == 3){
-            if(getWorld()->validSquare(getX()/16, getY()/16-1)){
-                setDirection(0);
-                setWalkingDirection(270);
-                break;
-            }
-        }
-    }
-}
 
 bool Player::checkFork(){
     if(!getWorld()->atFork(this)){
@@ -234,6 +235,97 @@ bool Player::checkFork(){
 
 // Player End
 
+// Enemy Begin
+
+Enemy::Enemy(int ImageID, int x, int y, StudentWorld* world)
+:Mover(ImageID, x, y, 0, 0, world, 0, true, 0)
+{
+    pauseCounter = 180;
+}
+
+
+bool Enemy::checkFork(){
+    if(!getWorld()->atFork(this)){
+        return true;
+    }
+    newRandomDirection();
+    return true;
+}
+
+void Enemy::stopWalking(){
+    setWaitingStatus(true);
+    setPauseCounter(180);
+}
+
+// Enemy End
+
+// Boo Begin
+
+Boo::Boo(int ImageID, int x, int y, StudentWorld* world)
+: Enemy(ImageID, x, y, world)
+{
+}
+
+void Boo::doSomething(){
+    if(!isMoving()){
+        // Interact with player Code
+        changePauseCounter(-1);
+        if(getPauseCounter() == 0){
+            startMoving();
+        } else{
+            return;
+        }
+    }
+    checkFork();
+    
+    if(!checkDirection()){
+        fixDirection();
+    }
+    walk();
+}
+
+void Boo::startMoving(){
+    setTicks(randInt(1, 3)*8);
+    newRandomDirection();
+    setWaitingStatus(false);
+}
+
+// Boo end
+
+
+// Bowser Begin
+
+Bowser::Bowser(int ImageID, int x, int y, StudentWorld* world)
+: Enemy(ImageID, x, y, world)
+{
+}
+
+void Bowser::doSomething(){
+    if(!isMoving()){
+        // Interact with player code
+        changePauseCounter(-1);
+        if(getPauseCounter() == 0){
+            startMoving();
+            newRandomDirection();
+        } else{
+            return;
+        }
+    }
+    
+    checkFork();
+    if(!checkDirection()){
+        fixDirection();
+    }
+    walk();
+}
+
+void Bowser::stopWalking(){
+    setWaitingStatus(true);
+    setPauseCounter(180);
+    /* Code to implement dropping square (25% chance) */
+}
+
+// Bowser End
 
 // Square Begin
 
