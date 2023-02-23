@@ -370,9 +370,9 @@ void StudentWorld::getIntsFromCoord(std::string str, int& x, int&y){
 
 void StudentWorld::teleportMover(int player){
     if(player == 1){
-        return teleportMover(peach);
+        teleportMover(peach);
     } else{
-        return teleportMover(yoshi);
+        teleportMover(yoshi);
     }
 }
 
@@ -382,6 +382,7 @@ void StudentWorld::teleportMover(Actor* p){
     set<string>::iterator p1 = validCoords.begin();
     advance(p1, i);
     getIntsFromCoord(*p1, x, y);
+    p->moveTo(x*16,y*16);
     p->moveTo(x*16,y*16);
 }
 
