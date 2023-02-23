@@ -34,7 +34,7 @@ Mover::~Mover(){}
 
 
 void Mover::startMoving(){
-    ticks_to_move = 8;//randInt(1, 10)*8;
+    ticks_to_move = randInt(1, 10)*8;
     waitingToMove = false;
 }
 
@@ -140,7 +140,7 @@ void Mover::newRandomDirection(){
 Player::Player(int playerID, int x, int y, StudentWorld* world)
 :Mover(playerID, x, y, 0, 0, world, 0, true, 0)
 {
-    hasVortex = true;
+    hasVortex = false;
     m_stars = 0;
     m_coins = 0;
 }
@@ -527,7 +527,7 @@ EventSquare::EventSquare(int imageID, int x, int y, StudentWorld* world)
 
 void EventSquare::doSomething(){
     if(newPlayerLanded(1)){
-        int event = 1;//randInt(1, 3);
+        int event = randInt(1, 3);
         if(event == 1){
             getWorld()->teleportMover(1);
             getWorld()->invalidateMovement(1);
