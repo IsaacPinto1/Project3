@@ -137,7 +137,7 @@ int StudentWorld::move()
     setGameStatText(text); // update the coins/stars stats text at screen top
     if (timeRemaining() <= 0)
     {
-        playSound(14);
+        playSound(SOUND_GAME_FINISHED);
         
         if (yoshi->getStars() > peach->getStars())
         {
@@ -210,6 +210,18 @@ bool StudentWorld::doesIntersect(Actor *a1, int player){
     } else{
         return doesIntersect(a1, yoshi);
     }
+}
+
+bool StudentWorld::doesOverlap(Actor *a1, Actor *a2){
+    int x1, y1, x2, y2;
+    x1 = a1->getX();
+    y1 = a1->getY();
+    x2 = a2->getX();
+    y2 = a2->getY();
+    if (x1 <= x2 + 15 && x1 + 15 >= x2 && y1 <= y2 + 15 && y1 + 15 >= y2) {
+        return true;
+    }
+    return false;
 }
 
 void StudentWorld::changeCoins(int amount, int player){
@@ -356,27 +368,21 @@ void StudentWorld::getIntsFromCoord(std::string str, int& x, int&y){
     y = stoi(token);
 }
 
-
-void StudentWorld::teleportPlayer(int player){
+void StudentWorld::teleportMover(int player){
     if(player == 1){
-        int i = randInt(0, int(validCoords.size()-1));
-        int x; int y;
-        set<string>::iterator p = validCoords.begin();
-        advance(p, i);
-        getIntsFromCoord(*p, x, y);
-        Actor* newPos = new Player(*peach, x*16, y*16, 1);
-        delete peach;
-        peach = newPos;
+        return teleportMover(peach);
     } else{
-        int i = randInt(0, int(validCoords.size()-1));
-        int x; int y;
-        set<string>::iterator p = validCoords.begin();
-        advance(p, i);
-        getIntsFromCoord(*p, x, y);
-        Actor* newPos = new Player(*yoshi, x*16, y*16, 2);
-        delete yoshi;
-        yoshi = newPos;
+        return teleportMover(yoshi);
     }
+}
+
+void StudentWorld::teleportMover(Actor* p){
+    int i = randInt(0, int(validCoords.size()-1));
+    int x; int y;
+    set<string>::iterator p1 = validCoords.begin();
+    advance(p1, i);
+    getIntsFromCoord(*p1, x, y);
+    p->moveTo(x*16,y*16);
 }
 
 void StudentWorld::swapCoins(){
@@ -400,5 +406,39 @@ void StudentWorld::robPlayer(int player){
     } else if (player == 2){
         yoshi->setCoins(0);
         yoshi->setStars(0);
+    }
+}
+
+
+void StudentWorld::dropSquare(int x, int y){
+    for(int i = 0; i < actors.size(); i++){
+        if(actors[i]->getX() == x && actors[i]->getY() == y && !actors[i]->doesMove()){
+            actors[i]->kill();
+            actors.push_back(new DroppingSquare(IID_DROPPING_SQUARE, x, y, this));
+            return;
+        }
+    }
+}
+
+
+void StudentWorld::createVortex(int x, int y, int walkDir){
+    actors.push_back(new Vortex(IID_VORTEX, x, y, this, walkDir));
+}
+
+bool StudentWorld::didHit(Actor *v){
+    for(int i = 0; i < actors.size(); i++){
+        if(actors[i]->impactable() && doesOverlap(actors[i], v)){
+            actors[i]->getVortexed();
+            return true;
+        }
+    }
+    return false;
+}
+
+void StudentWorld::invalidateMovement(int player){
+    if(player == 1){
+        peach->setWalkingDirection(-1);
+    } else{
+        yoshi->setWalkingDirection(-1);
     }
 }

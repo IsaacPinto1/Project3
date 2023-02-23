@@ -36,10 +36,15 @@ public:
     void giveVortex(int player);
     void swapPlayers();
     void getIntsFromCoord(std::string str, int& x, int&y);
-    void teleportPlayer(int player);
+    void teleportMover(int player);
+    void teleportMover(Actor* p);
     void swapCoins();
     void swapStars();
     void robPlayer(int player);
+    void dropSquare(int x, int y);
+    void createVortex(int x, int y, int walkDir);
+    bool didHit(Actor* v);
+    void invalidateMovement(int player);
     
 private:
     std::set<std::string> validCoords; // 0-15 coords

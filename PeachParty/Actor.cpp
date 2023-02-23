@@ -34,7 +34,7 @@ Mover::~Mover(){}
 
 
 void Mover::startMoving(){
-    ticks_to_move = randInt(1, 10)*8;
+    ticks_to_move = 8;//randInt(1, 10)*8;
     waitingToMove = false;
 }
 
@@ -140,10 +140,9 @@ void Mover::newRandomDirection(){
 Player::Player(int playerID, int x, int y, StudentWorld* world)
 :Mover(playerID, x, y, 0, 0, world, 0, true, 0)
 {
-    hasVortex = false;
+    hasVortex = true;
     m_stars = 0;
     m_coins = 0;
-    justTeleported = false;
 }
 
 Player::Player(Actor& position, Actor& stats, int player)
@@ -152,29 +151,23 @@ Player::Player(Actor& position, Actor& stats, int player)
     hasVortex = stats.hasAVortex();
     m_stars = stats.getStars();
     m_coins = stats.getCoins();
-    justTeleported = false;
-}
-
-Player::Player(Actor& old, int x, int y, int player)
-: Mover(player-1, x, y, old.getDirection(), 0, old.getWorld(), old.getWalkingDirection(), true, 0)
-{
-    m_stars = old.getStars();
-    m_coins = old.getCoins();
-    hasVortex = old.hasAVortex();
-    justTeleported = true;
 }
 
 Player::~Player(){}
 
 void Player::doSomething(){
     if(!isMoving()){
-        if(justTeleported){
+        if(getWalkingDirection() == -1){
             newRandomDirection();
         }
-        justTeleported = false;
         int action = getWorld()->playerAction(this);
         if(action == ACTION_ROLL){
             startMoving();
+        } else if(action == ACTION_FIRE && hasVortex){
+            getWorld()->createVortex(getX(), getY(), getWalkingDirection());
+            getWorld()->playSound(SOUND_PLAYER_FIRE);
+            hasVortex = false;
+            return;
         } else{
             return;
         }
@@ -270,6 +263,13 @@ bool Enemy::shouldInteract(int player){
     return false;
 }
 
+
+void Enemy::getVortexed(){
+    getWorld()->teleportMover(this);
+    setDirection(0);
+    setWalkingDirection(0);
+    stopWalking();
+}
 
 
 
@@ -370,7 +370,11 @@ void Bowser::doSomething(){
 void Bowser::stopWalking(){
     setWaitingStatus(true);
     setPauseCounter(180);
-    /* Code to implement dropping square (25% chance) */
+    int action = randInt(1, 4); // 1: dropping square, else:nothing
+    if(action == 1){
+        getWorld()->dropSquare(getX(), getY());
+        getWorld()->playSound(SOUND_DROPPING_SQUARE_CREATED);
+    }
 }
 
 
@@ -384,6 +388,50 @@ void Bowser::Interact(int player){
 
 // Bowser End
 
+
+
+
+// Vortex Begin
+
+
+Vortex::Vortex(int ImageID, int x, int y, StudentWorld* world, int walkDir)
+: Mover(ImageID, x, y, 0, 0, world, walkDir, false, 0)
+{
+}
+
+
+void Vortex::doSomething(){
+    if(!isAlive()){
+        return;
+    }
+    walk();
+    if(getX() >= VIEW_WIDTH || getY() >= VIEW_WIDTH){
+        kill();
+    }
+    if(getWorld()->didHit(this)){
+        kill();
+        getWorld()->playSound(SOUND_HIT_BY_VORTEX);
+    }
+}
+
+void Vortex::walk(){
+    int direction = getWalkingDirection(); // Move in direction
+    if(direction == 0){ // right
+        //moveAtAngle(right, 2);
+        moveTo(getX()+2, getY());
+    } else if(direction == 90){ // up
+        //moveAtAngle(up, 2);
+        moveTo(getX(), getY()+2);
+    } else if (direction == 180){ // left
+        //moveAtAngle(left, 2);
+        moveTo(getX()-2, getY());
+    } else if(direction == 270){ // down
+        //moveAtAngle(down, 2);
+        moveTo(getX(), getY()-2);
+    }
+}
+
+// Vortex End
 
 
 
@@ -481,7 +529,8 @@ void EventSquare::doSomething(){
     if(newPlayerLanded(1)){
         int event = 1;//randInt(1, 3);
         if(event == 1){
-            getWorld()->teleportPlayer(1);
+            getWorld()->teleportMover(1);
+            getWorld()->invalidateMovement(1);
             trackPlayer(1);
             getWorld()->playSound(SOUND_PLAYER_TELEPORT);
         } else if (event == 2){
@@ -501,7 +550,8 @@ void EventSquare::doSomething(){
     if(newPlayerLanded(2)){
         int event = randInt(1, 3);
         if(event == 1){
-            getWorld()->teleportPlayer(2);
+            getWorld()->teleportMover(2);
+            getWorld()->invalidateMovement(2);
             trackPlayer(2);
             getWorld()->playSound(SOUND_PLAYER_TELEPORT);
         } else if (event == 2){

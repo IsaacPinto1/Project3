@@ -34,6 +34,9 @@ public:
     virtual void setCoins(int amount){return;}
     virtual void setStars(int amount){return;}
     virtual bool doesMove(){return false;}
+    void kill(){m_isAlive = false;}
+    virtual bool impactable(){return false;}
+    virtual void getVortexed(){return;}
     
 private:
     StudentWorld* m_world;
@@ -56,7 +59,7 @@ public:
     virtual void startMoving(); // Set ticks to random roll and change waiting to move status
     bool checkDirection(); // Check valid square in front
     void fixDirection(); // Change direction if not valid
-    void walk(); // Move in direction of motion, then decrement ticks. Call stopWalking() if ticks run out
+    virtual void walk(); // Move in direction of motion, then decrement ticks. Call stopWalking() if ticks run out
     void newRandomDirection();
     virtual void stopWalking() = 0; // Behavior when ticks run out
     virtual bool checkFork() = 0; // Returns true if not at fork or was at fork but moved, false if stuck at fork
@@ -92,7 +95,6 @@ private:
     bool hasVortex;
     int m_stars;
     int m_coins;
-    bool justTeleported;
 };
 
 class Enemy: public Mover{
@@ -102,10 +104,11 @@ public:
     void changePauseCounter(int amount){pauseCounter += amount;}
     int getPauseCounter(){return pauseCounter;}
     bool shouldInteract(int player);
+    virtual bool impactable(){return true;}
+    virtual void getVortexed();
     
     virtual bool checkFork();
     virtual void stopWalking();
-    // getHitByVortex();
 private:
     int pauseCounter;
 };
@@ -126,6 +129,15 @@ public:
     virtual void doSomething();
     virtual void stopWalking();
     void Interact(int player);
+};
+
+class Vortex: public Mover{
+public:
+    Vortex(int ImageID, int x, int y, StudentWorld* world, int walkDir);
+    virtual void doSomething();
+    virtual void walk();
+    virtual void stopWalking(){return;} // Behavior when ticks run out
+    virtual bool checkFork(){return false;}
 };
 
 
