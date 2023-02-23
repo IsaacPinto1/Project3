@@ -15,7 +15,6 @@ Actor::Actor(int imageID, int startX, int startY, int dir, int depth, StudentWor
     m_isAlive = true;
 }
 
-Actor::~Actor(){}
 
 // Actor End
 
@@ -29,8 +28,6 @@ Mover::Mover(int imageID, int x, int y, int dir, int depth, StudentWorld* world,
     ticks_to_move = ticks;
     walkingDir = walkDir;
 }
-
-Mover::~Mover(){}
 
 
 void Mover::startMoving(){
@@ -153,7 +150,6 @@ Player::Player(Actor& position, Actor& stats, int player)
     m_coins = stats.getCoins();
 }
 
-Player::~Player(){}
 
 void Player::doSomething(){
     if(!isMoving()){

@@ -14,7 +14,7 @@ public:
     virtual int getWalkingDirection(){return 0;}
     virtual void setWalkingDirection(int dir){return;}
     bool isAlive(){return m_isAlive;}
-    virtual ~Actor();
+    virtual ~Actor(){}
     
     void trackPlayer(int player){players.insert(player);}
     void removePlayer(int player){players.erase(player);}
@@ -47,7 +47,7 @@ private:
 class Mover: public Actor{
 public:
     Mover(int imageID, int x, int y, int dir, int depth, StudentWorld* world, int walkDir, bool waiting, int ticks);
-    ~Mover();
+    virtual ~Mover(){}
     virtual int getWalkingDirection(){return walkingDir;}
     virtual void setWalkingDirection(int dir){walkingDir = dir;}
     virtual int getTicksToMove(){return ticks_to_move;}
@@ -77,7 +77,7 @@ public:
     Player(int playerID, int x, int y, StudentWorld* world);
     Player(Actor& position, Actor& stats, int player);
     Player(Actor& old, int x, int y, int player);
-    ~Player();
+    virtual ~Player(){}
     virtual void doSomething();
     
     virtual bool hasAVortex(){return hasVortex;}
@@ -100,6 +100,7 @@ private:
 class Enemy: public Mover{
 public:
     Enemy(int ImageID, int x, int y, StudentWorld* world);
+    virtual ~Enemy(){}
     void setPauseCounter(int amount){pauseCounter = amount;}
     void changePauseCounter(int amount){pauseCounter += amount;}
     int getPauseCounter(){return pauseCounter;}
@@ -145,6 +146,7 @@ public:
 class Square: public Actor{
 public:
     Square(int imageID, int x, int y, StudentWorld* world, int dir);
+    virtual ~Square(){}
     bool newPlayerLanded(int player);
 };
 
