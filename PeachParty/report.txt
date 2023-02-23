@@ -1,0 +1,40 @@
+1)
+The interaction is handled by the bankSquare and the StudentWorld object.
+
+StudentWorld has a doesintersect() function that compares the (x,y) coordinates
+of two Actor pointers passed as parameters. I overloaded this function to be able to
+take an Actor pointer and an int to represent the player instead. If the int passed is a 1,
+it calls doesIntersect() with the pointer passed in and peach. If the int is a 2, it calls 
+doesIntersect() with the pointer and yoshi.
+
+StudentWorld stores a bank as an int. It has two functions to interact with the bank,
+depositInBank() and withDrawFromBank(). Both functions take an int to represent the player,
+1 being peach and 2 being yoshi. depositInBank takes 5 coins (or as many as the player has) 
+from the player and adds that amount to the bank. withDrawFromBank() empties the bank, giving
+the bank balance to the player and resetting the bank int to 0.
+
+StudentWorld also has a function that checks if either peach or yoshi is moving, again
+taking in an int parameter where 1 is peach and 2 is yoshi.
+
+The Bank Square has a set of ints which is used to track players it has acted on already
+to prevent duplicate action. Again, 1 represents peach in this set and 2 represents yoshi.
+
+The Bank Square also internally stores a pointer to the StudentWorld object so it can 
+access all of the above functions
+
+Each tick, the bankSquare checks if it intersects with Peach and isn't already tracking
+peach in its player set.
+    If this is true, then it checks if peach is moving (peach passing over).
+        If peach is moving, it tells the StudentWorld object to call depositInBank on Peach
+    If Peach isn't moving, then she landed on the bank square.
+        The square tells the StudentWorld object to call withDrawFromBank on Peach
+        The square will also track peach by adding a 1 to its player set.
+If the bank Square doesn't intersect with peach but is currently tracking her (the set contains 
+a 1), then it removes Peach from its set
+
+The BankSquare will then repeat the same logic with Yoshi.
+
+2) All functionality was implemented
+
+3) I assumed that Bowser could convert a directional square into a dropping square, thus removing its ability to change direction
+I assumed that a vortex is created at the same (x,y) coordinates as the player when fired (wording of spec is that it is created 'in front of' player)
