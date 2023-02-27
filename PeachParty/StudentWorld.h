@@ -8,6 +8,7 @@
 #include <set>
 
 class Actor;
+class Player;
 // Students:  Add code to this file, StudentWorld.cpp, Actor.h, and Actor.cpp
 
 class StudentWorld : public GameWorld
@@ -49,8 +50,8 @@ public:
 private:
     std::set<std::string> validCoords; // 0-15 coords
     std::vector<Actor*> actors;
-    Actor* peach;
-    Actor* yoshi;
+    Player* peach;
+    Player* yoshi;
     int bank;
 };
 

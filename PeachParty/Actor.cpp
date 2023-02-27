@@ -94,7 +94,7 @@ void Mover::walk(){
         moveTo(getX(), getY()-2);
     }
     changeTicks(-1);
-    if(getTicksToMove() == 0){
+    if(ticks_to_move == 0){
         stopWalking();
     }
 }
@@ -142,7 +142,7 @@ Player::Player(int playerID, int x, int y, StudentWorld* world)
     m_coins = 0;
 }
 
-Player::Player(Actor& position, Actor& stats, int player)
+Player::Player(Player& position, Player& stats, int player)
 :Mover(player-1, position.getX(), position.getY(), position.getDirection(), 0, position.getWorld(), position.getWalkingDirection(), !position.isMoving(), position.getTicksToMove())
 {
     hasVortex = stats.hasAVortex();

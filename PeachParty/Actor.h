@@ -11,8 +11,6 @@ public:
     
     virtual void doSomething() = 0;
     StudentWorld* getWorld() const{return m_world;}
-    virtual int getWalkingDirection(){return 0;}
-    virtual void setWalkingDirection(int dir){return;}
     bool isAlive(){return m_isAlive;}
     virtual ~Actor(){}
     
@@ -21,18 +19,7 @@ public:
     bool containsPlayer(int player){return players.count(player)==1;}
     void clearPlayers(){players.clear();}
     
-    virtual bool hasAVortex(){return false;}
-    virtual void giveVortex(){return;}
-    virtual int getRoll() {return 0;}
-    virtual int getCoins() {return 0;}
-    virtual int getStars() {return 0;}
-    virtual bool isMoving(){return false;}
-    virtual int changeCoins(int amount){return 0;}
-    virtual int changeStars(int amount){return 0;}
     virtual bool changesDirection() {return false;}
-    virtual int getTicksToMove(){return 0;}
-    virtual void setCoins(int amount){return;}
-    virtual void setStars(int amount){return;}
     virtual bool doesMove(){return false;}
     void kill(){m_isAlive = false;}
     virtual bool impactable(){return false;}
@@ -48,11 +35,11 @@ class Mover: public Actor{
 public:
     Mover(int imageID, int x, int y, int dir, int depth, StudentWorld* world, int walkDir, bool waiting, int ticks);
     virtual ~Mover(){}
-    virtual int getWalkingDirection(){return walkingDir;}
-    virtual void setWalkingDirection(int dir){walkingDir = dir;}
-    virtual int getTicksToMove(){return ticks_to_move;}
-    virtual bool isMoving(){return waitingToMove == false;}
-    virtual int getRoll(){return ceil(1.0*ticks_to_move/8);}
+    int getWalkingDirection(){return walkingDir;}
+    void setWalkingDirection(int dir){walkingDir = dir;}
+    int getTicksToMove(){return ticks_to_move;}
+    bool isMoving(){return waitingToMove == false;}
+    int getRoll(){return ceil(1.0*ticks_to_move/8);}
     void setTicks(int amount){ticks_to_move = amount;}
     void changeTicks(int amount){ticks_to_move += amount;}
     void setWaitingStatus(bool status){waitingToMove = status;}
@@ -75,21 +62,20 @@ private:
 class Player: public Mover{
 public:
     Player(int playerID, int x, int y, StudentWorld* world);
-    Player(Actor& position, Actor& stats, int player);
-    Player(Actor& old, int x, int y, int player);
+    Player(Player& position, Player& stats, int player);
     virtual ~Player(){}
     virtual void doSomething();
     
-    virtual bool hasAVortex(){return hasVortex;}
-    virtual void giveVortex(){hasVortex = true;}
-    virtual int getCoins(){return m_coins;}
-    virtual int getStars(){return m_stars;}
-    virtual int changeCoins(int amount);
-    virtual int changeStars(int amount);
+    bool hasAVortex(){return hasVortex;}
+    void giveVortex(){hasVortex = true;}
+    int getCoins(){return m_coins;}
+    int getStars(){return m_stars;}
+    int changeCoins(int amount);
+    int changeStars(int amount);
     virtual void stopWalking(){setWaitingStatus(true);}
     virtual bool checkFork();
-    virtual void setStars(int amount);
-    virtual void setCoins(int amount);
+    void setStars(int amount);
+    void setCoins(int amount);
     
 private:
     bool hasVortex;
@@ -138,7 +124,7 @@ public:
     virtual void doSomething();
     virtual void walk();
     virtual void stopWalking(){return;} // Behavior when ticks run out
-    virtual bool checkFork(){return false;}
+    virtual bool checkFork(){return true;}
 };
 
 

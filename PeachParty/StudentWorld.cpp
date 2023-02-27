@@ -348,8 +348,8 @@ void StudentWorld::giveVortex(int player){
 
 
 void StudentWorld::swapPlayers(){
-    Actor* newPeach = new Player(*yoshi, *peach, 1);
-    Actor* newYoshi = new Player(*peach, *yoshi, 2);
+    Player* newPeach = new Player(*yoshi, *peach, 1);
+    Player* newYoshi = new Player(*peach, *yoshi, 2);
     delete peach;
     peach = newPeach;
     delete yoshi;
