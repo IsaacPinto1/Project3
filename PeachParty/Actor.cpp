@@ -341,11 +341,10 @@ Bowser::Bowser(int ImageID, int x, int y, StudentWorld* world)
 
 void Bowser::doSomething(){
     if(!isMoving()){
-        if(shouldInteract(1)){
-            Interact(1);
-        }
-        if(shouldInteract(2)){
-            Interact(2);
+        for(int i = 1; i <= 2; i++){
+            if(shouldInteract(i)){
+                Interact(i);
+            }
         }
         changePauseCounter(-1);
         if(getPauseCounter() == 0){
@@ -464,30 +463,19 @@ void CoinSquare::doSomething(){ // Peach== 1 Yoshi == 2
     if(!isAlive()){
         return;
     }
-    if(newPlayerLanded(1)){
-        getWorld()->changeCoins(coinAmount, 1);
-        trackPlayer(1);
-        if(coinAmount == 3){
-            getWorld()->playSound(SOUND_GIVE_COIN);
-        } else{
-            getWorld()->playSound(SOUND_TAKE_COIN);
+    for(int i = 1; i <=2 ; i++){
+        if(newPlayerLanded(i)){
+            getWorld()->changeCoins(coinAmount, i);
+            trackPlayer(i);
+            if(coinAmount == 3){
+                getWorld()->playSound(SOUND_GIVE_COIN);
+            } else{
+                getWorld()->playSound(SOUND_TAKE_COIN);
+            }
         }
-    }
-    if(!(getWorld()->doesIntersect(this, 1)) && containsPlayer(1)){
-        removePlayer(1);
-    }
-    
-    if(newPlayerLanded(2)){
-        getWorld()->changeCoins(coinAmount,2);
-        trackPlayer(2);
-        if(coinAmount == 3){
-            getWorld()->playSound(SOUND_GIVE_COIN);
-        } else{
-            getWorld()->playSound(SOUND_TAKE_COIN);
+        if(!(getWorld()->doesIntersect(this, i)) && containsPlayer(i)){
+            removePlayer(i);
         }
-    }
-    if(!(getWorld()->doesIntersect(this, 2)) && containsPlayer(2)){
-        removePlayer(2);
     }
 }
 // Coin Square End
@@ -502,11 +490,10 @@ DirectionalSquare::DirectionalSquare(int imageID, int x, int y, StudentWorld* wo
 }
 
 void DirectionalSquare::doSomething(){
-    if(getWorld()->doesIntersect(this, 1)){
-        getWorld()->changePlayerDirection(1, direction);
-    }
-    if(getWorld()->doesIntersect(this, 2)){
-        getWorld()->changePlayerDirection(2, direction);
+    for(int i = 1; i <= 2; i++){
+        if(getWorld()->doesIntersect(this, i)){
+            getWorld()->changePlayerDirection(i, direction);
+        }
     }
 }
 
@@ -522,46 +509,31 @@ EventSquare::EventSquare(int imageID, int x, int y, StudentWorld* world)
 
 
 void EventSquare::doSomething(){
-    if(newPlayerLanded(1)){
-        int event = randInt(1, 3);
-        if(event == 1){
-            getWorld()->teleportMover(1);
-            getWorld()->invalidateMovement(1);
-            trackPlayer(1);
-            getWorld()->playSound(SOUND_PLAYER_TELEPORT);
-        } else if (event == 2){
-            getWorld()->swapPlayers();
-            trackPlayer(2);
-            getWorld()->playSound(SOUND_PLAYER_TELEPORT);
-        } else if (event == 3){
-            trackPlayer(1);
-            getWorld()->giveVortex(1);
-            getWorld()->playSound(SOUND_GIVE_VORTEX);
+    for(int i = 1; i <= 2; i++){
+        if(newPlayerLanded(i)){
+            int event = randInt(1, 3);
+            if(event == 1){
+                getWorld()->teleportMover(i);
+                getWorld()->invalidateMovement(i);
+                trackPlayer(i);
+                getWorld()->playSound(SOUND_PLAYER_TELEPORT);
+            } else if (event == 2){
+                getWorld()->swapPlayers();
+                if(i == 1){
+                    trackPlayer(2);
+                } else{
+                    trackPlayer(1);
+                }
+                getWorld()->playSound(SOUND_PLAYER_TELEPORT);
+            } else if (event == 3){
+                trackPlayer(i);
+                getWorld()->giveVortex(i);
+                getWorld()->playSound(SOUND_GIVE_VORTEX);
+            }
         }
-    }
-    if(!getWorld()->doesIntersect(this, 1) && containsPlayer(1)){
-        removePlayer(1);
-    }
-    
-    if(newPlayerLanded(2)){
-        int event = randInt(1, 3);
-        if(event == 1){
-            getWorld()->teleportMover(2);
-            getWorld()->invalidateMovement(2);
-            trackPlayer(2);
-            getWorld()->playSound(SOUND_PLAYER_TELEPORT);
-        } else if (event == 2){
-            getWorld()->swapPlayers();
-            trackPlayer(1);
-            getWorld()->playSound(SOUND_PLAYER_TELEPORT);
-        } else if (event == 3){
-            trackPlayer(2);
-            getWorld()->giveVortex(2);
-            getWorld()->playSound(SOUND_GIVE_VORTEX);
+        if(!getWorld()->doesIntersect(this, i) && containsPlayer(i)){
+            removePlayer(i);
         }
-    }
-    if(!getWorld()->doesIntersect(this, 2) && containsPlayer(2)){
-        removePlayer(2);
     }
 }
 // Event Square End
@@ -577,26 +549,17 @@ BankSquare::BankSquare(int imageID, int x, int y, StudentWorld* world)
 }
 
 void BankSquare::doSomething(){
-    if(getWorld()->doesIntersect(this, 1) && !containsPlayer(1)){ // Intersects with peach
-        if(getWorld()->playerMoving(1)){ // If moving, deduct 5 coins
-            getWorld()->depositInBank(1);
-        } else{
-            getWorld()->withDrawFromBank(1); // If not moving, empty bank, then track
-            trackPlayer(1);
+    for(int i = 1; i <= 2; i++){
+        if(getWorld()->doesIntersect(this, i) && !containsPlayer(i)){ // Intersects with peach
+            if(getWorld()->playerMoving(i)){ // If moving, deduct 5 coins
+                getWorld()->depositInBank(i);
+            } else{
+                getWorld()->withDrawFromBank(i); // If not moving, empty bank, then track
+                trackPlayer(i);
+            }
+        } else if(!getWorld()->doesIntersect(this, i) && containsPlayer(i)){
+            removePlayer(i); // If doesn't intersect and tracking, stop tracking
         }
-    } else if(!getWorld()->doesIntersect(this, 1) && containsPlayer(1)){
-        removePlayer(1); // If doesn't intersect and tracking, stop tracking
-    }
-    
-    if(getWorld()->doesIntersect(this, 2) && !containsPlayer(2)){ // Intersects with peach
-        if(getWorld()->playerMoving(2)){ // If moving, deduct 5 coins
-            getWorld()->depositInBank(2);
-        } else{
-            getWorld()->withDrawFromBank(2); // If not moving, empty bank, then track
-            trackPlayer(2);
-        }
-    } else if(!getWorld()->doesIntersect(this, 2) && containsPlayer(2)){
-        removePlayer(2); // If doesn't intersect and tracking, stop tracking
     }
 }
 
@@ -613,20 +576,14 @@ StarSquare::StarSquare(int imageID, int x, int y, StudentWorld* world)
 
 
 void StarSquare::doSomething(){
-    if(getWorld()->doesIntersect(this, 1) && !containsPlayer(1)){
-        trackPlayer(1);
-        getWorld()->addStar(1);
-    }
-    if(!getWorld()->doesIntersect(this, 1) && containsPlayer(1)){
-        removePlayer(1);
-    }
-    
-    if(getWorld()->doesIntersect(this, 2) && !containsPlayer(2)){
-        trackPlayer(2);
-        getWorld()->addStar(2);
-    }
-    if(!getWorld()->doesIntersect(this, 2) && containsPlayer(2)){
-        removePlayer(2);
+    for(int i = 1; i <= 2; i++){
+        if(getWorld()->doesIntersect(this, i) && !containsPlayer(i)){
+            trackPlayer(i);
+            getWorld()->addStar(i);
+        }
+        if(!getWorld()->doesIntersect(this, i) && containsPlayer(i)){
+            removePlayer(i);
+        }
     }
 }
 // Star Square End
@@ -641,35 +598,21 @@ DroppingSquare::DroppingSquare(int imageID, int x, int y, StudentWorld* world)
 }
 
 void DroppingSquare::doSomething(){
-    if(newPlayerLanded(1)){
-        int action = randInt(1, 2); // 1: Take 10 coins, 2: Take 1 star
-        if(action == 1){
-            getWorld()->changeCoins(-10, 1);
+    for(int i = 1; i <= 2; i++){
+        if(newPlayerLanded(i)){
+            int action = randInt(1, 2); // 1: Take 10 coins, 2: Take 1 star
+            if(action == 1){
+                getWorld()->changeCoins(-10, i);
+            }
+            if(action == 2){
+                getWorld()->changeStars(-1, i);
+            }
+            trackPlayer(i);
+            getWorld()->playSound(SOUND_DROPPING_SQUARE_ACTIVATE);
         }
-        if(action == 2){
-            getWorld()->changeStars(-1, 1);
+        if(!getWorld()->doesIntersect(this, i) && containsPlayer(i)){
+            removePlayer(i);
         }
-        trackPlayer(1);
-        getWorld()->playSound(SOUND_DROPPING_SQUARE_ACTIVATE);
-    }
-    if(!getWorld()->doesIntersect(this, 1) && containsPlayer(1)){
-        removePlayer(1);
-        
-        
-    }
-    if(newPlayerLanded(2)){
-        int action = randInt(1, 2); // 1: Take 10 coins, 2: Take 1 star
-        if(action == 1){
-            getWorld()->changeCoins(-10, 2);
-        }
-        if(action == 2){
-            getWorld()->changeStars(-1, 2);
-        }
-        trackPlayer(2);
-        getWorld()->playSound(SOUND_DROPPING_SQUARE_ACTIVATE);
-    }
-    if(!getWorld()->doesIntersect(this, 2) && containsPlayer(2)){
-        removePlayer(2);
     }
 }
 
