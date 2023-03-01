@@ -442,6 +442,12 @@ bool Square::newPlayerLanded(int player){
     return getWorld()->doesIntersect(this, player) && !containsPlayer(player) && !(getWorld()->playerMoving(player));
 }
 
+void Square::removeTrackIfGone(int player){
+    if(!(getWorld()->doesIntersect(this, player)) && containsPlayer(player)){
+        removePlayer(player);
+    }
+}
+
 // Square End
 
 
@@ -473,9 +479,7 @@ void CoinSquare::doSomething(){ // Peach== 1 Yoshi == 2
                 getWorld()->playSound(SOUND_TAKE_COIN);
             }
         }
-        if(!(getWorld()->doesIntersect(this, i)) && containsPlayer(i)){
-            removePlayer(i);
-        }
+        removeTrackIfGone(i);
     }
 }
 // Coin Square End
@@ -531,9 +535,7 @@ void EventSquare::doSomething(){
                 getWorld()->playSound(SOUND_GIVE_VORTEX);
             }
         }
-        if(!getWorld()->doesIntersect(this, i) && containsPlayer(i)){
-            removePlayer(i);
-        }
+        removeTrackIfGone(i);
     }
 }
 // Event Square End
@@ -557,9 +559,8 @@ void BankSquare::doSomething(){
                 getWorld()->withDrawFromBank(i); // If not moving, empty bank, then track
                 trackPlayer(i);
             }
-        } else if(!getWorld()->doesIntersect(this, i) && containsPlayer(i)){
-            removePlayer(i); // If doesn't intersect and tracking, stop tracking
         }
+        removeTrackIfGone(i);
     }
 }
 
@@ -581,9 +582,7 @@ void StarSquare::doSomething(){
             trackPlayer(i);
             getWorld()->addStar(i);
         }
-        if(!getWorld()->doesIntersect(this, i) && containsPlayer(i)){
-            removePlayer(i);
-        }
+        removeTrackIfGone(i);
     }
 }
 // Star Square End
@@ -610,9 +609,7 @@ void DroppingSquare::doSomething(){
             trackPlayer(i);
             getWorld()->playSound(SOUND_DROPPING_SQUARE_ACTIVATE);
         }
-        if(!getWorld()->doesIntersect(this, i) && containsPlayer(i)){
-            removePlayer(i);
-        }
+        removeTrackIfGone(i);
     }
 }
 
