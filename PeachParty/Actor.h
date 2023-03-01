@@ -134,6 +134,7 @@ public:
     Square(int imageID, int x, int y, StudentWorld* world, int dir);
     virtual ~Square(){}
     bool newPlayerLanded(int player);
+    void removeTrackIfGone(int player);
 };
 
 class CoinSquare:public Square{
