@@ -248,7 +248,6 @@ Enemy::Enemy(int ImageID, int x, int y, StudentWorld* world)
 }
 
 bool Enemy::shouldInteract(int player){
-    
     if(getWorld()->doesIntersect(this, player) && !containsPlayer(player) && !getWorld()->playerMoving(player)){
         trackPlayer(player);
         return true;
@@ -294,8 +293,10 @@ Boo::Boo(int ImageID, int x, int y, StudentWorld* world)
 
 void Boo::doSomething(){
     if(!isMoving()){
-        if(shouldInteract(1) || shouldInteract(2)){
-            Interact();
+        for(int i = 1; i <= 2; i++){
+            if(shouldInteract(i)){
+                Interact();
+            }
         }
         changePauseCounter(-1);
         if(getPauseCounter() == 0){
@@ -552,7 +553,7 @@ BankSquare::BankSquare(int imageID, int x, int y, StudentWorld* world)
 
 void BankSquare::doSomething(){
     for(int i = 1; i <= 2; i++){
-        if(getWorld()->doesIntersect(this, i) && !containsPlayer(i)){ // Intersects with peach
+        if(getWorld()->doesIntersect(this, i) && !containsPlayer(i)){
             if(getWorld()->playerMoving(i)){ // If moving, deduct 5 coins
                 getWorld()->depositInBank(i);
             } else{
